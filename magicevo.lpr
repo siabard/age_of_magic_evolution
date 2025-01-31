@@ -1,0 +1,5 @@
+program magicevo;
+begin
+
+end.
+
