@@ -7,13 +7,90 @@
       <Unit>
         <Filename Value="magicevo.lpr"/>
         <IsPartOfProject Value="True"/>
+        <TopLine Value="3"/>
+        <CursorPos X="21" Y="43"/>
+        <UsageCount Value="20"/>
+        <Loaded Value="True"/>
+      </Unit>
+      <Unit>
+        <Filename Value="../SDL2-for-Pascal/units/sdlrenderer.inc"/>
+        <EditorIndex Value="2"/>
+        <CursorPos X="3" Y="10"/>
+        <UsageCount Value="10"/>
+        <Loaded Value="True"/>
+      </Unit>
+      <Unit>
+        <Filename Value="engine.pas"/>
+        <IsPartOfProject Value="True"/>
         <IsVisibleTab Value="True"/>
-        <CursorPos X="3" Y="3"/>
+        <EditorIndex Value="1"/>
+        <TopLine Value="36"/>
+        <CursorPos X="31" Y="70"/>
         <UsageCount Value="20"/>
         <Loaded Value="True"/>
       </Unit>
     </Units>
-    <JumpHistory HistoryIndex="-1"/>
+    <JumpHistory HistoryIndex="14">
+      <Position>
+        <Filename Value="magicevo.lpr"/>
+        <Caret Line="12" Column="5"/>
+      </Position>
+      <Position>
+        <Filename Value="magicevo.lpr"/>
+        <Caret Line="13" Column="5"/>
+      </Position>
+      <Position>
+        <Filename Value="magicevo.lpr"/>
+        <Caret Line="21" Column="24"/>
+      </Position>
+      <Position>
+        <Filename Value="magicevo.lpr"/>
+        <Caret Line="15" Column="6"/>
+      </Position>
+      <Position>
+        <Filename Value="magicevo.lpr"/>
+        <Caret Line="34" Column="3"/>
+      </Position>
+      <Position>
+        <Filename Value="magicevo.lpr"/>
+      </Position>
+      <Position>
+        <Filename Value="magicevo.lpr"/>
+        <Caret Line="34" Column="5"/>
+      </Position>
+      <Position>
+        <Filename Value="magicevo.lpr"/>
+        <Caret Line="41" Column="27"/>
+      </Position>
+      <Position>
+        <Filename Value="magicevo.lpr"/>
+        <Caret Line="33" Column="3"/>
+      </Position>
+      <Position>
+        <Filename Value="magicevo.lpr"/>
+        <Caret Line="39" Column="30" TopLine="5"/>
+      </Position>
+      <Position>
+        <Filename Value="magicevo.lpr"/>
+        <Caret Line="36" Column="20" TopLine="2"/>
+      </Position>
+      <Position>
+        <Filename Value="engine.pas"/>
+        <Caret Line="17" Column="34" TopLine="8"/>
+      </Position>
+      <Position>
+        <Filename Value="engine.pas"/>
+        <Caret Line="88" Column="21" TopLine="51"/>
+      </Position>
+      <Position>
+        <Filename Value="engine.pas"/>
+        <Caret Line="89" Column="32" TopLine="51"/>
+      </Position>
+      <Position>
+        <Filename Value="engine.pas"/>
+        <Caret Line="93" Column="5" TopLine="51"/>
+      </Position>
+    </JumpHistory>
     <RunParams>
       <FormatVersion Value="2"/>
       <Modes ActiveMode=""/>
