@@ -1,12 +1,11 @@
 program magicevo;
 {$mode objfpc}{$h+}{$j-}
-
 uses
   sysutils,
   sdl2,
   sdl2_image,
   sdl2_mixer,
-  engine;
+  engine, asset_manager, LogUtil;
 
 var
   AEngine: TEngine;
@@ -17,10 +16,10 @@ begin
   {---------------------------------------------------------------------------}
   { Init SDL                                                                  }
   {---------------------------------------------------------------------------}
-  WriteLn('INIT SDL2');
+  LogDebug('INIT SDL2');
   if SDL_Init(SDL_INIT_VIDEO or SDL_INIT_AUDIO) < 0 then
   begin
-    WriteLn('ERROR::MAIN::Failed to Init SDL2');
+    LogDebug('ERROR::MAIN::Failed to Init SDL2');
     Exit;
   end;
 
@@ -30,6 +29,7 @@ begin
   { Engin 초기화                                                              }
   {---------------------------------------------------------------------------}
   AEngine := TEngine.Create;
+  AEngine.GameInit('resources/asset.txt');
 
   {---------------------------------------------------------------------------}
   { 이벤트 루프 +  화면 출력                                                  }

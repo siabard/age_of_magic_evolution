@@ -23,6 +23,11 @@
     <RunParams>
       <FormatVersion Value="2"/>
     </RunParams>
+    <RequiredPackages>
+      <Item>
+        <PackageName Value="LCL"/>
+      </Item>
+    </RequiredPackages>
     <Units>
       <Unit>
         <Filename Value="magicevo.lpr"/>
@@ -31,6 +36,15 @@
       <Unit>
         <Filename Value="engine.pas"/>
         <IsPartOfProject Value="True"/>
+      </Unit>
+      <Unit>
+        <Filename Value="asset_manager.pas"/>
+        <IsPartOfProject Value="True"/>
+      </Unit>
+      <Unit>
+        <Filename Value="logutil.pas"/>
+        <IsPartOfProject Value="True"/>
+        <UnitName Value="LogUtil"/>
       </Unit>
     </Units>
   </ProjectOptions>

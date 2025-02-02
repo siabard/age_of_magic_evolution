@@ -7,16 +7,8 @@
       <Unit>
         <Filename Value="magicevo.lpr"/>
         <IsPartOfProject Value="True"/>
-        <TopLine Value="3"/>
-        <CursorPos X="21" Y="43"/>
-        <UsageCount Value="20"/>
-        <Loaded Value="True"/>
-      </Unit>
-      <Unit>
-        <Filename Value="../SDL2-for-Pascal/units/sdlrenderer.inc"/>
-        <EditorIndex Value="2"/>
-        <CursorPos X="3" Y="10"/>
-        <UsageCount Value="10"/>
+        <CursorPos X="43" Y="10"/>
+        <UsageCount Value="69"/>
         <Loaded Value="True"/>
       </Unit>
       <Unit>
@@ -24,71 +16,169 @@
         <IsPartOfProject Value="True"/>
         <IsVisibleTab Value="True"/>
         <EditorIndex Value="1"/>
-        <TopLine Value="36"/>
-        <CursorPos X="31" Y="70"/>
+        <TopLine Value="122"/>
+        <CursorPos X="56" Y="154"/>
+        <UsageCount Value="69"/>
+        <Loaded Value="True"/>
+      </Unit>
+      <Unit>
+        <Filename Value="../SDL2-for-Pascal/units/sdlrenderer.inc"/>
+        <EditorIndex Value="-1"/>
+        <CursorPos X="3" Y="10"/>
+        <UsageCount Value="5"/>
+      </Unit>
+      <Unit>
+        <Filename Value="asset_manager.pas"/>
+        <IsPartOfProject Value="True"/>
+        <EditorIndex Value="3"/>
+        <TopLine Value="41"/>
+        <CursorPos X="49" Y="64"/>
+        <UsageCount Value="69"/>
+        <Loaded Value="True"/>
+      </Unit>
+      <Unit>
+        <Filename Value="../../../.local/lazarus/fpc/3.2.2/sources/packages/rtl-generics/src/inc/generics.dictionariesh.inc"/>
+        <EditorIndex Value="-1"/>
+        <TopLine Value="623"/>
+        <CursorPos X="3" Y="649"/>
+        <UsageCount Value="5"/>
+      </Unit>
+      <Unit>
+        <Filename Value="../SDL2-for-Pascal/units/sdl2_image.pas"/>
+        <EditorIndex Value="-1"/>
+        <CursorPos X="9" Y="28"/>
+        <UsageCount Value="10"/>
+      </Unit>
+      <Unit>
+        <Filename Value="logutil.pas"/>
+        <IsPartOfProject Value="True"/>
+        <UnitName Value="LogUtil"/>
+        <EditorIndex Value="2"/>
+        <CursorPos Y="2"/>
         <UsageCount Value="20"/>
         <Loaded Value="True"/>
       </Unit>
     </Units>
-    <JumpHistory HistoryIndex="14">
+    <JumpHistory HistoryIndex="29">
       <Position>
-        <Filename Value="magicevo.lpr"/>
-        <Caret Line="12" Column="5"/>
+        <Filename Value="asset_manager.pas"/>
+        <Caret Line="39" Column="30" TopLine="13"/>
       </Position>
       <Position>
-        <Filename Value="magicevo.lpr"/>
-        <Caret Line="13" Column="5"/>
+        <Filename Value="asset_manager.pas"/>
+        <Caret Line="48" Column="25" TopLine="31"/>
       </Position>
       <Position>
-        <Filename Value="magicevo.lpr"/>
-        <Caret Line="21" Column="24"/>
+        <Filename Value="asset_manager.pas"/>
+        <Caret Line="24" Column="7"/>
       </Position>
       <Position>
-        <Filename Value="magicevo.lpr"/>
-        <Caret Line="15" Column="6"/>
+        <Filename Value="asset_manager.pas"/>
+        <Caret Line="23" Column="35" TopLine="23"/>
       </Position>
       <Position>
-        <Filename Value="magicevo.lpr"/>
-        <Caret Line="34" Column="3"/>
+        <Filename Value="asset_manager.pas"/>
+        <Caret Line="56" Column="68" TopLine="39"/>
       </Position>
       <Position>
-        <Filename Value="magicevo.lpr"/>
+        <Filename Value="asset_manager.pas"/>
+        <Caret Line="58" Column="31" TopLine="40"/>
       </Position>
       <Position>
-        <Filename Value="magicevo.lpr"/>
-        <Caret Line="34" Column="5"/>
-      </Position>
-      <Position>
-        <Filename Value="magicevo.lpr"/>
-        <Caret Line="41" Column="27"/>
-      </Position>
-      <Position>
-        <Filename Value="magicevo.lpr"/>
-        <Caret Line="33" Column="3"/>
-      </Position>
-      <Position>
-        <Filename Value="magicevo.lpr"/>
-        <Caret Line="39" Column="30" TopLine="5"/>
-      </Position>
-      <Position>
-        <Filename Value="magicevo.lpr"/>
-        <Caret Line="36" Column="20" TopLine="2"/>
+        <Filename Value="asset_manager.pas"/>
+        <Caret Line="71" Column="49" TopLine="42"/>
       </Position>
       <Position>
         <Filename Value="engine.pas"/>
-        <Caret Line="17" Column="34" TopLine="8"/>
+        <Caret Line="38" Column="8" TopLine="14"/>
+      </Position>
+      <Position>
+        <Filename Value="magicevo.lpr"/>
+        <Caret Line="8" Column="38"/>
+      </Position>
+      <Position>
+        <Filename Value="magicevo.lpr"/>
+        <Caret Line="41" Column="19" TopLine="17"/>
       </Position>
       <Position>
         <Filename Value="engine.pas"/>
-        <Caret Line="88" Column="21" TopLine="51"/>
+        <Caret Line="17" Column="22" TopLine="6"/>
       </Position>
       <Position>
         <Filename Value="engine.pas"/>
-        <Caret Line="89" Column="32" TopLine="51"/>
+        <Caret Line="116" Column="57" TopLine="100"/>
+      </Position>
+      <Position>
+        <Filename Value="asset_manager.pas"/>
+        <Caret Line="70" Column="25" TopLine="45"/>
       </Position>
       <Position>
         <Filename Value="engine.pas"/>
-        <Caret Line="93" Column="5" TopLine="51"/>
+        <Caret Line="116" Column="57" TopLine="100"/>
+      </Position>
+      <Position>
+        <Filename Value="asset_manager.pas"/>
+        <Caret Line="74" Column="66" TopLine="45"/>
+      </Position>
+      <Position>
+        <Filename Value="asset_manager.pas"/>
+        <Caret Line="24" Column="58" TopLine="43"/>
+      </Position>
+      <Position>
+        <Filename Value="asset_manager.pas"/>
+        <Caret Line="74" Column="16" TopLine="45"/>
+      </Position>
+      <Position>
+        <Filename Value="engine.pas"/>
+        <Caret Line="116" Column="69" TopLine="92"/>
+      </Position>
+      <Position>
+        <Filename Value="magicevo.lpr"/>
+        <Caret Line="37" Column="30" TopLine="18"/>
+      </Position>
+      <Position>
+        <Filename Value="engine.pas"/>
+        <Caret Line="12" Column="3" TopLine="8"/>
+      </Position>
+      <Position>
+        <Filename Value="engine.pas"/>
+        <Caret Line="23" Column="23" TopLine="8"/>
+      </Position>
+      <Position>
+        <Filename Value="engine.pas"/>
+        <Caret Line="28" Column="53" TopLine="8"/>
+      </Position>
+      <Position>
+        <Filename Value="engine.pas"/>
+        <Caret Line="116" Column="57" TopLine="89"/>
+      </Position>
+      <Position>
+        <Filename Value="asset_manager.pas"/>
+        <Caret Line="26" Column="23" TopLine="7"/>
+      </Position>
+      <Position>
+        <Filename Value="engine.pas"/>
+        <Caret Line="125" Column="9" TopLine="102"/>
+      </Position>
+      <Position>
+        <Filename Value="engine.pas"/>
+        <Caret Line="152" Column="34" TopLine="64"/>
+      </Position>
+      <Position>
+        <Filename Value="magicevo.lpr"/>
+        <Caret Line="33" Column="19" TopLine="14"/>
+      </Position>
+      <Position>
+        <Filename Value="engine.pas"/>
+        <Caret Line="92" TopLine="90"/>
+      </Position>
+      <Position>
+        <Filename Value="asset_manager.pas"/>
+        <Caret Line="52" Column="54" TopLine="52"/>
+      </Position>
+      <Position>
+        <Filename Value="asset_manager.pas"/>
+        <Caret Line="78" Column="46" TopLine="50"/>
       </Position>
     </JumpHistory>
     <RunParams>
