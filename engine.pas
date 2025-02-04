@@ -14,13 +14,12 @@ type
     AWindow: PSDL_Window;
     ARenderer: PSDL_Renderer;
     Running: boolean;
-    ASdlKeyboardState: PUInt8;
     AAssetManager: TAssetManager;
 
   public
     constructor Create;
     destructor Destroy; override;
-    procedure GameInit(ConfigPath: PChar);
+    procedure GameInit(ConfigPath: pchar);
     procedure GameLoop;
   end;
 
@@ -82,7 +81,7 @@ end;
 {------------------------------------------------------------------------------}
 { 환경설정 파일 읽어 들이기                                                    }
 {------------------------------------------------------------------------------}
-procedure TEngine.GameInit(ConfigPath: PChar);
+procedure TEngine.GameInit(ConfigPath: pchar);
 var
   configFile: TextFile;
   config: string;
@@ -130,22 +129,31 @@ end;
 procedure TEngine.GameLoop;
 var
   itemTexture: PSDL_Texture;
+  sdlEvents: PSDL_Event;
 begin
 
   {---------------------------------------------------------------------------}
   { 이벤트 루프 +  화면 출력                                                  }
   {---------------------------------------------------------------------------}
   LogDebug('Show Screen');
-  ASdlKeyboardState := SDL_GetKeyboardState(nil);
   while Running = True do
   begin
-    SDL_PumpEvents;
 
-    // QUIT Check
-    if ASdlKeyboardState[SDL_SCANCODE_ESCAPE] = 1 then
+    new(sdlEvents);
+
+    // Event Loop
+    while SDL_PollEvent(sdlEvents) = 1 do
     begin
-      LogDebug('Escape From Event Loop');
-      Running := False;
+
+      case sdlEvents^.type_ of
+        SDL_QUITEV: Running := False;
+        SDL_KEYDOWN: begin
+          case sdlEvents^.key.keysym.sym of
+            SDLK_ESCAPE: Running := False;
+
+          end;
+        end;
+      end;
     end;
     SDL_RenderClear(ARenderer);
 
@@ -156,6 +164,7 @@ begin
     SDL_Delay(20);
 
   end;
+  Dispose(sdlEvents);
 end;
 
 end.
