@@ -46,6 +46,10 @@
         <IsPartOfProject Value="True"/>
         <UnitName Value="LogUtil"/>
       </Unit>
+      <Unit>
+        <Filename Value="hangul.pas"/>
+        <IsPartOfProject Value="True"/>
+      </Unit>
     </Units>
   </ProjectOptions>
   <CompilerOptions>
