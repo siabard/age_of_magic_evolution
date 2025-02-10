@@ -6,7 +6,7 @@ interface
 
 
 uses
-  Classes, SysUtils, Sdl2, asset_manager, LogUtil;
+  Classes, SysUtils, Sdl2, asset_manager, LogUtil, textbox;
 
 type
   TEngine = class
@@ -15,6 +15,7 @@ type
     ARenderer: PSDL_Renderer;
     Running: boolean;
     AAssetManager: TAssetManager;
+    ATextBox: TTextBox;
 
   public
     constructor Create;
@@ -49,7 +50,7 @@ begin
   end;
 
   AAssetManager := TAssetManager.Create(ARenderer);
-
+  ATextBox := TTextBox.Create(0, 0, 0, 0);
   Running := True;
 
 end;
@@ -104,7 +105,7 @@ begin
         if Fields[0] = 'texture' then
         begin
           // Texture Loading
-          AAssetManager.LoadTexture(Fields[0], pansichar(Fields[1]));
+          AAssetManager.LoadTexture(Fields[1], pansichar(Fields[2]));
         end;
       end;
 
@@ -117,8 +118,10 @@ begin
       end;
     end;
 
-
-
+    // 텍스트박스 폰트 설정
+    ATextBox.korFontTexture := AAssetManager.GetTexture('hangul');
+    ATextBox.engFontTexture := AAssetManager.GetTexture('ascii');
+    ATextBox.boxTexture := AAssetManager.GetTexture('panel');
 
   finally
     CloseFile(configFile);
@@ -157,9 +160,12 @@ begin
     end;
     SDL_RenderClear(ARenderer);
 
-    itemTexture := AAssetManager.GetTexture('texture');
+    itemTexture := AAssetManager.GetTexture('items');
     if itemTexture <> nil then
       SDL_RenderCopy(ARenderer, itemTexture, nil, nil);
+
+    ATextBox.DrawAsciiCharacter(ARenderer, 0, 0, 65);
+    ATextBox.DrawString(ARenderer, 0, 0, 'ABCDEFG ijkl 123 가각단댕뒘');
     SDL_RenderPresent(ARenderer);
     SDL_Delay(20);
 

@@ -32,3 +32,4 @@ backup/*
 */*/backup
 *.res
 magicevo
+.DS_Store

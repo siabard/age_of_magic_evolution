@@ -2,6 +2,26 @@ unit hangul;
 
 {$mode ObjFPC}{$H+}
 
+(*
+  {---------------------------------------------------------------------------}
+  { 한글 테스트                                                               }
+  {---------------------------------------------------------------------------}
+
+  Sample := '가각고곡카까';
+  Converted := utf8_to_ucs2(Sample);
+  for I := Low(Converted) to High(Converted) do
+  begin
+    UniString := UTF8Encode(unicodestring(widechar(Converted[I])));
+    jaso := buildJaso(Converted[I]);
+    bul := buildBul(jaso);
+    WriteLn(Format('%4s : U+%.4X %d', [UniString, Converted[I], Converted[I]]));
+    debugJaso(jaso);
+    debugBul(bul);
+
+  end;
+
+*)
+
 interface
 
 uses
@@ -23,6 +43,8 @@ type
 
   TUTF16Array = array of word;
 
+  ELanguage = (ascii, korean, none);
+
 const
   NUM_OF_JONG: integer = 28;
   NUM_OF_MID: integer = 21;
@@ -34,6 +56,7 @@ function buildBul(jaso: TJaso): TBul;
 procedure debugBul(bul: TBul);
 
 function utf8_to_ucs2(src: string): TUTF16Array;
+function get_language(src: word): ELanguage;
 
 implementation
 
@@ -52,6 +75,7 @@ utf8 문자열이나 ucs2 문자열중 한글을 자소로 분리하는 라이�
 - 초성 ㄱㄲㄴㄷㄸㄹㅁㅂㅃㅅㅆㅇㅈㅉㅊㅋㅌㅍㅎ
 - 중성 ㅏㅐㅑㅒㅓㅔㅕㅖㅗㅘㅙㅚㅛㅜㅝㅞㅟㅠㅡㅢㅣ
 - 종성 ㄱㄲ(ㄱㅅ)ㄴ(ㄴㅈ)(ㄴㅎ)ㄷㄹ(ㄹㄱ)(ㄹㅁ)(ㄹㅂ)(ㄹㅅ)(ㄹㅌ)(ㄹㅍ)(ㄹㅎ)ㅁㅂ(ㅂㅅ)ㅅㅆㅇㅈㅊㅋㅌㅍㅎ
+
 *)
 
 function buildJaso(code: word): TJaso;
@@ -310,6 +334,18 @@ begin
       Result[High(Result)] := $DC00 or (CodePoint and $3FF);        // Low surrogate
     end;
   end;
+end;
+
+
+function get_language(src: word): ELanguage;
+begin
+  if (src >= $ac00) and (src <= $d7a3) then
+    Result := korean
+  else if (src >= $0) and (src <= $7f) then
+    Result := ascii
+  else
+    Result := none;
+
 end;
 
 end.
