@@ -16,6 +16,8 @@ type
     BY: integer;
     BW: integer;
     BH: integer;
+    PX: integer;
+    PY: integer;
     ABoxTexture: PSDL_Texture;
     AKorFontTexture: PSDL_Texture;
     AEngFontTexture: PSDL_Texture;
@@ -23,17 +25,17 @@ type
     procedure SetKorFontTexture(texture: PSDL_Texture);
     procedure SetEngFontTexture(texture: PSDL_Texture);
   public
-    constructor Create(x: integer; y: integer; w: integer; h: integer);
+    constructor Create(x: integer; y: integer; w: integer; h: integer;
+      padding_x: integer; padding_y: integer);
     destructor Destroy; override;
     property boxTexture: PSDL_Texture read ABoxTexture write SetBoxTexture;
     property korFontTexture: PSDL_Texture read AKorFontTexture write SetKorFontTexture;
     property engFontTexture: PSDL_Texture read AEngFontTexture write SetEngFontTexture;
-    procedure DrawAsciiCharacter(renderer: PSDL_Renderer; ox: integer;
-      oy: integer; AsciiWord: word);
-    procedure DrawHangulCharacter(renderer: PSDL_Renderer; ox: integer;
-      oy: integer; AsciiWord: word);
-    procedure DrawString(renderer: PSDL_Renderer; px: integer;
-      py: integer; Src: string);
+    procedure DrawAsciiCharacter(renderer: PSDL_Renderer; Tx: integer;
+      Ty: integer; AsciiWord: word);
+    procedure DrawHangulCharacter(renderer: PSDL_Renderer; Tx: integer;
+      Ty: integer; AsciiWord: word);
+    procedure DrawString(renderer: PSDL_Renderer; Src: string);
     procedure DrawPanel(renderer: PSDL_Renderer);
 
   end;
@@ -49,12 +51,15 @@ const
 implementation
 
 
-constructor TTextBox.Create(x: integer; y: integer; w: integer; h: integer);
+constructor TTextBox.Create(x: integer; y: integer; w: integer; h: integer;
+  padding_x: integer; padding_y: integer);
 begin
   BX := x;
   BY := y;
   BW := w;
   BH := h;
+  PX := padding_x;
+  PY := padding_y;
 end;
 
 destructor TTextBox.Destroy;
@@ -78,8 +83,8 @@ begin
   Self.AEngFontTexture := texture;
 end;
 
-procedure TTextBox.DrawAsciiCharacter(renderer: PSDL_Renderer; ox: integer;
-  oy: integer; AsciiWord: word);
+procedure TTextBox.DrawAsciiCharacter(renderer: PSDL_Renderer; Tx: integer;
+  Ty: integer; AsciiWord: word);
 var
   col: integer;
   row: integer;
@@ -96,16 +101,15 @@ begin
   CharRect.w := ASCII_FONT_WIDTH;
   CharRect.h := ASCII_FONT_HEIGHT;
 
-  DestRect.x := ox;
-  DestRect.y := oy;
+  DestRect.x := Tx;
+  DestRect.y := Ty;
   DestRect.w := ASCII_FONT_WIDTH;
   DestRect.h := ASCII_FONT_HEIGHT;
 
   SDL_RenderCopy(renderer, AEngFontTexture, @CharRect, @DestRect);
 end;
 
-procedure TTextBox.DrawString(renderer: PSDL_Renderer; px: integer;
-  py: integer; Src: string);
+procedure TTextBox.DrawString(renderer: PSDL_Renderer; Src: string);
 var
   WordArray: TUTF16Array;
   I: integer;
@@ -119,22 +123,30 @@ begin
   for I := Low(WordArray) to High(WordArray) do
   begin
 
-    if get_language(WordArray[I]) = ascii then
+    if Ty <= (Self.BY + Self.BH - 2 * PANEL_PART_SIZE) then
     begin
-      Self.DrawAsciiCharacter(renderer, Tx, Ty, WordArray[I]);
-      Tx := Tx + ASCII_FONT_WIDTH;
-    end
-    else if get_language(WordArray[I]) = korean then
-    begin
-      Self.DrawHangulCharacter(renderer, Tx, Ty, WordArray[I]);
-      Tx := Tx + HANGUL_FONT_WIDTH;
+      if get_language(WordArray[I]) = ascii then
+      begin
+        Self.DrawAsciiCharacter(renderer, Tx, Ty, WordArray[I]);
+        Tx := Tx + ASCII_FONT_WIDTH;
+      end
+      else if get_language(WordArray[I]) = korean then
+      begin
+        Self.DrawHangulCharacter(renderer, Tx, Ty, WordArray[I]);
+        Tx := Tx + HANGUL_FONT_WIDTH;
+      end;
+      if Tx > (Self.BX + Self.BW - 2 * PANEL_PART_SIZE) then
+      begin
+        Tx := Self.Bx + Self.Px;
+        Ty := Ty + ASCII_FONT_HEIGHT;
+      end;
     end;
-
   end;
+
 end;
 
 procedure TTextBox.DrawHangulCharacter(renderer: PSDL_Renderer;
-  ox: integer; oy: integer; AsciiWord: word);
+  Tx: integer; Ty: integer; AsciiWord: word);
 var
   AJaso: TJaso;
   ABul: TBul;
@@ -151,8 +163,8 @@ begin
   // 초성/중성/종성에 대한 각각의 위치를 구한다.
   // 각위치는 각각의 값이 0이 아니라면 : 자소값 * 16, 벌값 * 16 이다.
 
-  DestRect.x := ox;
-  DestRect.y := oy;
+  DestRect.x := Tx;
+  DestRect.y := Ty;
   DestRect.w := HANGUL_FONT_WIDTH;
   DestRect.h := HANGUL_FONT_HEIGHT;
 
@@ -197,14 +209,14 @@ procedure TTextBox.DrawPanel(renderer: PSDL_Renderer);
 var
   CharRect: TSDL_Rect;
   DestRect: TSDL_Rect;
-  PanelWidth: Integer;
-  PanelHeight: Integer;
+  PanelWidth: integer;
+  PanelHeight: integer;
 begin
   // 모서리를 제외한 너비와 넓이를 구한다.
   PanelWidth := Self.BW - PANEL_PART_SIZE * 2;
   PanelHeight := Self.BH - PANEL_PART_SIZE * 2;
 
-  If (PanelWidth > 0) and (PanelHeight > 0) Then
+  if (PanelWidth > 0) and (PanelHeight > 0) then
   begin
     // 왼쪽 위 모서리
     DestRect.x := Self.BX;

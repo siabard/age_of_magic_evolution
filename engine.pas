@@ -50,7 +50,7 @@ begin
   end;
 
   AAssetManager := TAssetManager.Create(ARenderer);
-  ATextBox := TTextBox.Create(0, 0, 192, 160);
+  ATextBox := TTextBox.Create(0, 0, 192, 32, 4, 4);
   Running := True;
 
 end;
@@ -165,7 +165,7 @@ begin
       SDL_RenderCopy(ARenderer, itemTexture, nil, nil);
 
     ATextBox.DrawPanel(ARenderer);
-    ATextBox.DrawString(ARenderer, 0, 0, 'ABCDEFG ijkl 123 가각단댕');
+    ATextBox.DrawString(ARenderer, 'ABCDEFG ijkl 123 가각단댕. 세상은 더 이상 커질 수 없을 정도로 커진다. 텍스트의 크기도 마찬가지. 점점 커진다.');
     SDL_RenderPresent(ARenderer);
     SDL_Delay(20);
 
