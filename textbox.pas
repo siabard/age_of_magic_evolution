@@ -37,6 +37,13 @@ type
 
   end;
 
+const
+  ASCII_FONT_HEIGHT: integer = 16;
+  ASCII_FONT_WIDTH: integer = 8;
+  HANGUL_FONT_HEIGHT: integer = 16;
+  HANGUL_FONT_WIDTH: integer = 16;
+  ASCII_FONT_COLS: Integer = 16;
+
 implementation
 
 
@@ -79,18 +86,18 @@ var
 begin
   // Ascii Texture 에서 위치를 찾는다.
   // 각 폰트 크기는 가로 8, 세로 16픽셀이다.
-  row := integer(AsciiWord div 16);
-  col := (AsciiWord - (row * 16));
+  row := integer(AsciiWord div ASCII_FONT_COLS);
+  col := (AsciiWord - (row * 16ASCII_FONT_COLS);
   // 해당 글자를 지정한 x, y 위치에 Render Copy 한다.
-  CharRect.x := col * 8;
-  CharRect.y := row * 16;
-  CharRect.w := 8;
-  CharRect.h := 16;
+  CharRect.x := col * ASCII_FONT_WIDTH;
+  CharRect.y := row * ASCII_FONT_HEIGHT;
+  CharRect.w := ASCII_FONT_WIDTH;
+  CharRect.h := ASCII_FONT_HEIGHT;
 
   DestRect.x := ox;
   DestRect.y := oy;
-  DestRect.w := 8;
-  DestRect.h := 16;
+  DestRect.w := ASCII_FONT_WIDTH;
+  DestRect.h := ASCII_FONT_HEIGHT;
 
   SDL_RenderCopy(renderer, AEngFontTexture, @CharRect, @DestRect);
 end;
@@ -113,12 +120,12 @@ begin
     if get_language(WordArray[I]) = ascii then
     begin
       Self.DrawAsciiCharacter(renderer, Tx, Ty, WordArray[I]);
-      Tx := Tx + 8;
+      Tx := Tx + ASCII_FONT_WIDTH;
     end
     else if get_language(WordArray[I]) = korean then
     begin
       Self.DrawHangulCharacter(renderer, Tx, Ty, WordArray[I]);
-      Tx := Tx + 16;
+      Tx := Tx + HANGUL_FONT_WIDTH;
     end;
 
   end;
@@ -144,16 +151,16 @@ begin
 
   DestRect.x := ox;
   DestRect.y := oy;
-  DestRect.w := 16;
-  DestRect.h := 16;
+  DestRect.w := HANGUL_FONT_WIDTH;
+  DestRect.h := HANGUL_FONT_HEIGHT;
 
-  CharRect.w := 16;
-  CharRect.h := 16;
+  CharRect.w := HANGUL_FONT_WIDTH;
+  CharRect.h := HANGUL_FONT_HEIGHT;
 
   if (AJaso.cho > 0) and (ABul.cho > 0) then
   begin
-    fx := (AJaso.cho - 1) * 16;
-    fy := (ABul.cho - 1) * 16;
+    fx := (AJaso.cho - 1) * HANGUL_FONT_WIDTH;
+    fy := (ABul.cho - 1) * HANGUL_FONT_HEIGHT;
     CharRect.x := fx;
     CharRect.y := fy;
 
@@ -162,8 +169,9 @@ begin
 
   if (AJaso.middle > 0) and (ABul.middle > 0) then
   begin
-    fx := (AJaso.middle - 1) * 16;
-    fy := (ABul.middle - 1) * 16 + 8 * 16;
+    // 중성의 세로는 초성 8벌이 끝난 뒤부터 시작한다.
+    fx := (AJaso.middle - 1) * HANGUL_FONT_WIDTH;
+    fy := (ABul.middle - 1) * HANGUL_FONT_HEIGHT + 8 * HANGUL_FONT_HEIGHT;
     CharRect.x := fx;
     CharRect.y := fy;
 
@@ -172,8 +180,10 @@ begin
 
   if (AJaso.jong > 0) and (ABul.jong > 0) then
   begin
-    fx := AJaso.jong * 16;
-    fy := (ABul.jong - 1) * 16 + 12 * 16;
+    // 종성의 세로는 초성 8벌, 중성 4벌이 시작된 후부터 시작한다.
+    // 종성의 첫번째(1)은 비어있다.
+    fx := AJaso.jong * HANGUL_FONT_WIDTH;
+    fy := (ABul.jong - 1) * HANGUL_FONT_HEIGHT + 12 * HANGUL_FONT_HEIGHT;
     CharRect.x := fx;
     CharRect.y := fy;
 
