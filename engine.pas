@@ -50,7 +50,7 @@ begin
   end;
 
   AAssetManager := TAssetManager.Create(ARenderer);
-  ATextBox := TTextBox.Create(0, 0, 0, 0);
+  ATextBox := TTextBox.Create(0, 0, 192, 160);
   Running := True;
 
 end;
@@ -164,8 +164,8 @@ begin
     if itemTexture <> nil then
       SDL_RenderCopy(ARenderer, itemTexture, nil, nil);
 
-    ATextBox.DrawAsciiCharacter(ARenderer, 0, 0, 65);
-    ATextBox.DrawString(ARenderer, 0, 0, 'ABCDEFG ijkl 123 가각단댕뒘');
+    ATextBox.DrawPanel(ARenderer);
+    ATextBox.DrawString(ARenderer, 0, 0, 'ABCDEFG ijkl 123 가각단댕');
     SDL_RenderPresent(ARenderer);
     SDL_Delay(20);
 

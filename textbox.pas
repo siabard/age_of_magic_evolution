@@ -34,6 +34,7 @@ type
       oy: integer; AsciiWord: word);
     procedure DrawString(renderer: PSDL_Renderer; px: integer;
       py: integer; Src: string);
+    procedure DrawPanel(renderer: PSDL_Renderer);
 
   end;
 
@@ -42,7 +43,8 @@ const
   ASCII_FONT_WIDTH: integer = 8;
   HANGUL_FONT_HEIGHT: integer = 16;
   HANGUL_FONT_WIDTH: integer = 16;
-  ASCII_FONT_COLS: Integer = 16;
+  ASCII_FONT_COLS: integer = 16;
+  PANEL_PART_SIZE: integer = 3;
 
 implementation
 
@@ -87,7 +89,7 @@ begin
   // Ascii Texture 에서 위치를 찾는다.
   // 각 폰트 크기는 가로 8, 세로 16픽셀이다.
   row := integer(AsciiWord div ASCII_FONT_COLS);
-  col := (AsciiWord - (row * 16ASCII_FONT_COLS);
+  col := AsciiWord - (row * ASCII_FONT_COLS);
   // 해당 글자를 지정한 x, y 위치에 Render Copy 한다.
   CharRect.x := col * ASCII_FONT_WIDTH;
   CharRect.y := row * ASCII_FONT_HEIGHT;
@@ -188,6 +190,129 @@ begin
     CharRect.y := fy;
 
     SDL_RenderCopy(renderer, AKorFontTexture, @CharRect, @DestRect);
+  end;
+end;
+
+procedure TTextBox.DrawPanel(renderer: PSDL_Renderer);
+var
+  CharRect: TSDL_Rect;
+  DestRect: TSDL_Rect;
+  PanelWidth: Integer;
+  PanelHeight: Integer;
+begin
+  // 모서리를 제외한 너비와 넓이를 구한다.
+  PanelWidth := Self.BW - PANEL_PART_SIZE * 2;
+  PanelHeight := Self.BH - PANEL_PART_SIZE * 2;
+
+  If (PanelWidth > 0) and (PanelHeight > 0) Then
+  begin
+    // 왼쪽 위 모서리
+    DestRect.x := Self.BX;
+    DestRect.y := Self.BY;
+    DestRect.w := PANEL_PART_SIZE;
+    DestRect.h := PANEL_PART_SIZE;
+
+    CharRect.x := 0;
+    CharRect.y := 0;
+    CharRect.w := PANEL_PART_SIZE;
+    CharRect.h := PANEL_PART_SIZE;
+    SDL_RenderCopy(renderer, ABoxTexture, @CharRect, @DestRect);
+
+    // 윗변
+    DestRect.x := Self.BX + PANEL_PART_SIZE;
+    DestRect.y := Self.BY;
+    DestRect.w := PanelWidth;
+    DestRect.y := PANEL_PART_SIZE;
+
+    CharRect.x := PANEL_PART_SIZE;
+    CharRect.y := 0;
+    CharRect.w := PANEL_PART_SIZE;
+    CharRect.h := PANEL_PART_SIZE;
+    SDL_RenderCopy(renderer, ABoxTexture, @CharRect, @DestRect);
+
+    // 오른쪽 위 모서리
+    DestRect.x := Self.BX + PANEL_PART_SIZE + PanelWidth;
+    DestRect.y := Self.BY;
+    DestRect.w := PANEL_PART_SIZE;
+    DestRect.h := PANEL_PART_SIZE;
+
+    CharRect.x := PANEL_PART_SIZE * 2;
+    CharRect.y := 0;
+    CharRect.w := PANEL_PART_SIZE;
+    CharRect.h := PANEL_PART_SIZE;
+    SDL_RenderCopy(renderer, ABoxTexture, @CharRect, @DestRect);
+
+    // 왼쪽 변
+    DestRect.x := Self.BX;
+    DestRect.y := Self.BY + PANEL_PART_SIZE;
+    DestRect.w := PANEL_PART_SIZE;
+    DestRect.h := PanelHeight;
+
+    CharRect.x := 0;
+    CharRect.y := PANEL_PART_SIZE;
+    CharRect.w := PANEL_PART_SIZE;
+    CharRect.h := PANEL_PART_SIZE;
+    SDL_RenderCopy(renderer, ABoxTexture, @CharRect, @DestRect);
+
+    // 가운데
+    DestRect.x := Self.BX + PANEL_PART_SIZE;
+    DestRect.y := Self.BY + PANEL_PART_SIZE;
+    DestRect.w := PanelWidth;
+    DestRect.h := PanelHeight;
+
+    CharRect.x := PANEL_PART_SIZE;
+    CharRect.y := PANEL_PART_SIZE;
+    CharRect.w := PANEL_PART_SIZE;
+    CharRect.h := PANEL_PART_SIZE;
+    SDL_RenderCopy(renderer, ABoxTexture, @CharRect, @DestRect);
+
+    // 오른쪽 변
+    DestRect.x := Self.BX + PANEL_PART_SIZE + PanelWidth;
+    DestRect.y := Self.BY + PANEL_PART_SIZE;
+    DestRect.w := PANEL_PART_SIZE;
+    DestRect.h := PanelHeight;
+
+    CharRect.x := PANEL_PART_SIZE * 2;
+    CharRect.y := PANEL_PART_SIZE;
+    CharRect.w := PANEL_PART_SIZE;
+    CharRect.h := PANEL_PART_SIZE;
+    SDL_RenderCopy(renderer, ABoxTexture, @CharRect, @DestRect);
+
+    // 왼쪽 아래 모서리
+    DestRect.x := Self.BX;
+    DestRect.y := Self.BY + PANEL_PART_SIZE + PanelHeight;
+    DestRect.w := PANEL_PART_SIZE;
+    DestRect.h := PANEL_PART_SIZE;
+
+    CharRect.x := 0;
+    CharRect.y := PANEL_PART_SIZE * 2;
+    CharRect.w := PANEL_PART_SIZE;
+    CharRect.h := PANEL_PART_SIZE;
+    SDL_RenderCopy(renderer, ABoxTexture, @CharRect, @DestRect);
+
+    // 가운데
+    DestRect.x := Self.BX + PANEL_PART_SIZE;
+    DestRect.y := Self.BY + PANEL_PART_SIZE + PanelHeight;
+    DestRect.w := PanelWidth;
+    DestRect.h := PANEL_PART_SIZE;
+
+    CharRect.x := PANEL_PART_SIZE;
+    CharRect.y := PANEL_PART_SIZE * 2;
+    CharRect.w := PANEL_PART_SIZE;
+    CharRect.h := PANEL_PART_SIZE;
+    SDL_RenderCopy(renderer, ABoxTexture, @CharRect, @DestRect);
+
+    // 오른쪽 변
+    DestRect.x := Self.BX + PANEL_PART_SIZE + PanelWidth;
+    DestRect.y := Self.BY + PANEL_PART_SIZE + PanelHeight;
+    DestRect.w := PANEL_PART_SIZE;
+    DestRect.h := PANEL_PART_SIZE;
+
+    CharRect.x := PANEL_PART_SIZE * 2;
+    CharRect.y := PANEL_PART_SIZE * 2;
+    CharRect.w := PANEL_PART_SIZE;
+    CharRect.h := PANEL_PART_SIZE;
+    SDL_RenderCopy(renderer, ABoxTexture, @CharRect, @DestRect);
   end;
 end;
 

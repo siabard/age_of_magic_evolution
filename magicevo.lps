@@ -7,6 +7,7 @@
       <Unit>
         <Filename Value="magicevo.lpr"/>
         <IsPartOfProject Value="True"/>
+        <TopLine Value="11"/>
         <CursorPos X="25" Y="16"/>
         <UsageCount Value="410"/>
         <Loaded Value="True"/>
@@ -14,9 +15,10 @@
       <Unit>
         <Filename Value="engine.pas"/>
         <IsPartOfProject Value="True"/>
+        <IsVisibleTab Value="True"/>
         <EditorIndex Value="3"/>
         <TopLine Value="134"/>
-        <CursorPos X="54" Y="168"/>
+        <CursorPos Y="166"/>
         <UsageCount Value="410"/>
         <Loaded Value="True"/>
       </Unit>
@@ -58,55 +60,14 @@
       <Unit>
         <Filename Value="textbox.pas"/>
         <IsPartOfProject Value="True"/>
-        <IsVisibleTab Value="True"/>
         <EditorIndex Value="1"/>
-        <TopLine Value="110"/>
-        <CursorPos X="19" Y="148"/>
+        <TopLine Value="277"/>
+        <CursorPos X="21" Y="314"/>
         <UsageCount Value="250"/>
         <Loaded Value="True"/>
       </Unit>
     </Units>
     <JumpHistory HistoryIndex="29">
-      <Position>
-        <Filename Value="textbox.pas"/>
-        <Caret Line="27" Column="5"/>
-      </Position>
-      <Position>
-        <Filename Value="textbox.pas"/>
-        <Caret Line="37" Column="8"/>
-      </Position>
-      <Position>
-        <Filename Value="textbox.pas"/>
-        <Caret Line="42" Column="11"/>
-      </Position>
-      <Position>
-        <Filename Value="textbox.pas"/>
-        <Caret Line="26" Column="71" TopLine="4"/>
-      </Position>
-      <Position>
-        <Filename Value="textbox.pas"/>
-        <Caret Line="27" Column="42"/>
-      </Position>
-      <Position>
-        <Filename Value="textbox.pas"/>
-        <Caret Line="56" Column="30" TopLine="13"/>
-      </Position>
-      <Position>
-        <Filename Value="textbox.pas"/>
-        <Caret Line="61" Column="27" TopLine="18"/>
-      </Position>
-      <Position>
-        <Filename Value="textbox.pas"/>
-        <Caret Line="63" Column="39" TopLine="23"/>
-      </Position>
-      <Position>
-        <Filename Value="textbox.pas"/>
-        <Caret Line="26" Column="75" TopLine="17"/>
-      </Position>
-      <Position>
-        <Filename Value="textbox.pas"/>
-        <Caret Line="69" Column="5" TopLine="26"/>
-      </Position>
       <Position>
         <Filename Value="textbox.pas"/>
         <Caret Line="73" Column="18" TopLine="38"/>
@@ -184,6 +145,46 @@
       </Position>
       <Position>
         <Filename Value="textbox.pas"/>
+      </Position>
+      <Position>
+        <Filename Value="textbox.pas"/>
+        <Caret Line="199" Column="26" TopLine="157"/>
+      </Position>
+      <Position>
+        <Filename Value="textbox.pas"/>
+        <Caret Line="92" Column="10" TopLine="70"/>
+      </Position>
+      <Position>
+        <Filename Value="textbox.pas"/>
+        <Caret Line="201" Column="4" TopLine="161"/>
+      </Position>
+      <Position>
+        <Filename Value="engine.pas"/>
+        <Caret Line="168" Column="33" TopLine="134"/>
+      </Position>
+      <Position>
+        <Filename Value="textbox.pas"/>
+        <Caret Line="285" Column="21" TopLine="244"/>
+      </Position>
+      <Position>
+        <Filename Value="textbox.pas"/>
+        <Caret Line="47" Column="6" TopLine="43"/>
+      </Position>
+      <Position>
+        <Filename Value="textbox.pas"/>
+        <Caret Line="234" Column="32" TopLine="213"/>
+      </Position>
+      <Position>
+        <Filename Value="textbox.pas"/>
+        <Caret Line="261" Column="23" TopLine="240"/>
+      </Position>
+      <Position>
+        <Filename Value="textbox.pas"/>
+        <Caret Line="302" Column="21" TopLine="262"/>
+      </Position>
+      <Position>
+        <Filename Value="textbox.pas"/>
+        <Caret Line="314" Column="21" TopLine="277"/>
       </Position>
     </JumpHistory>
     <RunParams>
