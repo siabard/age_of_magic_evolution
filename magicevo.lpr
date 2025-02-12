@@ -8,7 +8,7 @@ uses
   engine,
   asset_manager,
   LogUtil,
-  hangul, textbox;
+  hangul, textbox, entity, components;
 
 var
   AEngine: TEngine;

@@ -54,6 +54,15 @@
         <Filename Value="textbox.pas"/>
         <IsPartOfProject Value="True"/>
       </Unit>
+      <Unit>
+        <Filename Value="entity.pas"/>
+        <IsPartOfProject Value="True"/>
+      </Unit>
+      <Unit>
+        <Filename Value="components.pas"/>
+        <IsPartOfProject Value="True"/>
+        <UnitName Value="Components"/>
+      </Unit>
     </Units>
   </ProjectOptions>
   <CompilerOptions>
