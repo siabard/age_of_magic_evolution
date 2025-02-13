@@ -5,32 +5,39 @@ unit entity;
 interface
 
 uses
-  Classes, SysUtils, Components, Generics.Collections;
+  Classes, SysUtils, Components, LogUtil;
 
 type
   TEntity = class
   private
-    FComponents: specialize THashSet<TComponent>;
+    FPosition: TPositionComponent;
+    procedure SetPosition(CompPosition: TPositionComponent);
+  public
     constructor Create;
     destructor Destroy; override;
+    property position: TPositionComponent read FPosition write SetPosition;
   end;
 
 implementation
 
 constructor TEntity.Create;
 begin
-  FComponents := specialize THashSet<TComponent>.Create;
+
 end;
 
 destructor TEntity.Destroy;
-var
-  comp: TComponent;
 begin
-  for comp in FComponents do
-    comp.Free;
-  FComponents.Free;
-  inherited Destroy;
+  if Assigned(FPosition) then
+    begin
+    LogDebug('Remove Position Component');
+    FreeAndNil(FPosition);
 
+    end;
+end;
+
+procedure TEntity.SetPosition(CompPosition: TPositionComponent);
+begin
+  Self.FPosition := CompPosition;
 end;
 
 end.

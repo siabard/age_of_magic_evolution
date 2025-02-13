@@ -5,7 +5,7 @@ unit Components;
 interface
 
 uses
-  Classes, SysUtils ;
+  Classes, SysUtils, LogUtil ;
 
 type
 
@@ -57,7 +57,7 @@ end;
 
 destructor TComponent.Destroy;
 begin
-  // Do Nothing
+  LogDebug('Destroy Component');
 end;
 
 constructor TPositionComponent.Create(id: String);
