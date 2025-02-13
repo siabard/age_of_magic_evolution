@@ -8,16 +8,10 @@ uses
   engine,
   asset_manager,
   LogUtil,
-  hangul, textbox, entity, components;
+  hangul, textbox, entity;
 
 var
   AEngine: TEngine;
-  Sample: string;
-  Converted: TUTF16Array;
-  I: integer;
-  UniString: string;
-  jaso: TJaso;
-  bul: TBul;
 begin
 
   {---------------------------------------------------------------------------}
