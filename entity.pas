@@ -10,6 +10,7 @@ uses
 type
 
   TPositionComponent = class;
+
   TEntity = class
   private
     FPosition: TPositionComponent;

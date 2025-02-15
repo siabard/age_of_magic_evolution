@@ -63,6 +63,23 @@
         <IsPartOfProject Value="True"/>
         <UnitName Value="Components"/>
       </Unit>
+      <Unit>
+        <Filename Value="camera.pas"/>
+        <IsPartOfProject Value="True"/>
+      </Unit>
+      <Unit>
+        <Filename Value="animation.pas"/>
+        <IsPartOfProject Value="True"/>
+      </Unit>
+      <Unit>
+        <Filename Value="action.pas"/>
+        <IsPartOfProject Value="True"/>
+      </Unit>
+      <Unit>
+        <Filename Value="keyinput.pas"/>
+        <IsPartOfProject Value="True"/>
+        <UnitName Value="KeyInput"/>
+      </Unit>
     </Units>
   </ProjectOptions>
   <CompilerOptions>

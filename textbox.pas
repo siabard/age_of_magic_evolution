@@ -6,7 +6,7 @@ interface
 
 
 uses
-  Classes, SysUtils, sdl2, hangul;
+  Classes, SysUtils, sdl2, hangul, LogUtil;
 
 type
 
@@ -21,9 +21,11 @@ type
     ABoxTexture: PSDL_Texture;
     AKorFontTexture: PSDL_Texture;
     AEngFontTexture: PSDL_Texture;
+    FText: string;
     procedure SetBoxTexture(texture: PSDL_Texture);
     procedure SetKorFontTexture(texture: PSDL_Texture);
     procedure SetEngFontTexture(texture: PSDL_Texture);
+    procedure SetText(RText: string);
   public
     constructor Create(x: integer; y: integer; w: integer; h: integer;
       padding_x: integer; padding_y: integer);
@@ -31,12 +33,15 @@ type
     property boxTexture: PSDL_Texture read ABoxTexture write SetBoxTexture;
     property korFontTexture: PSDL_Texture read AKorFontTexture write SetKorFontTexture;
     property engFontTexture: PSDL_Texture read AEngFontTexture write SetEngFontTexture;
+    property Text: string read FText write SetText;
     procedure DrawAsciiCharacter(renderer: PSDL_Renderer; Tx: integer;
       Ty: integer; AsciiWord: word);
     procedure DrawHangulCharacter(renderer: PSDL_Renderer; Tx: integer;
       Ty: integer; AsciiWord: word);
     procedure DrawString(renderer: PSDL_Renderer; Src: string);
+    procedure Draw(renderer: PSDL_Renderer);
     procedure DrawPanel(renderer: PSDL_Renderer);
+
 
   end;
 
@@ -145,6 +150,11 @@ begin
 
 end;
 
+procedure TTextBox.Draw(renderer: PSDL_Renderer);
+begin
+  DrawString(renderer, FText);
+end;
+
 procedure TTextBox.DrawHangulCharacter(renderer: PSDL_Renderer;
   Tx: integer; Ty: integer; AsciiWord: word);
 var
@@ -205,6 +215,11 @@ begin
   end;
 end;
 
+procedure TTextBox.SetText(RText: string);
+begin
+  FText := RText;
+end;
+
 procedure TTextBox.DrawPanel(renderer: PSDL_Renderer);
 var
   CharRect: TSDL_Rect;
@@ -234,7 +249,7 @@ begin
     DestRect.x := Self.BX + PANEL_PART_SIZE;
     DestRect.y := Self.BY;
     DestRect.w := PanelWidth;
-    DestRect.y := PANEL_PART_SIZE;
+    DestRect.h := PANEL_PART_SIZE;
 
     CharRect.x := PANEL_PART_SIZE;
     CharRect.y := 0;

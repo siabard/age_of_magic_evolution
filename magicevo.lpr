@@ -8,7 +8,9 @@ uses
   engine,
   asset_manager,
   LogUtil,
-  hangul, textbox, entity;
+  hangul,
+  textbox,
+  entity, camera, animation, keyinput;
 
 var
   AEngine: TEngine;
