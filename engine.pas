@@ -6,8 +6,8 @@ interface
 
 
 uses
-  Classes, SysUtils, Sdl2, asset_manager, entity, Components, LogUtil,
-  textbox, Generics.Collections;
+  Classes, SysUtils, Sdl2, asset_manager, entity, component, LogUtil,
+  textbox, Generics.Collections, scene;
 
 type
   TEngine = class
@@ -16,9 +16,7 @@ type
     ARenderer: PSDL_Renderer;
     Running: boolean;
     AAssetManager: TAssetManager;
-    ATextBox: TTextBox;
-    FEntities: specialize TList<TEntity>;
-    AddedEntities: specialize TList<TEntity>;
+    AScene: TScene;
 
   public
     constructor Create;
@@ -27,7 +25,6 @@ type
     procedure GameLoop;
     procedure GameUpdate(dt: real);
     procedure GameRender();
-    procedure DebugEntities();
   end;
 
 
@@ -56,10 +53,8 @@ begin
   end;
 
   AAssetManager := TAssetManager.Create(ARenderer);
-  ATextBox := TTextBox.Create(0, 0, 192, 32, 4, 4);
+
   Running := True;
-  FEntities := specialize TList<TEntity>.Create;
-  AddedEntities := specialize TList<TEntity>.Create;
 end;
 
 
@@ -71,15 +66,6 @@ begin
   {---------------------------------------------------------------------------}
   { Gabbage Collection                                                        }
   {---------------------------------------------------------------------------}
-
-  for AEntity in FEntities do
-  begin
-    LogDebug('Remove Entity');
-    AEntity.Free;
-  end;
-  FEntities.Free;
-
-  AAssetManager.Free;
 
   if Assigned(ARenderer) then
   begin
@@ -138,19 +124,14 @@ begin
       end;
     end;
 
-    // 텍스트박스 폰트 설정
-    ATextBox.korFontTexture := AAssetManager.GetTexture('hangul');
-    ATextBox.engFontTexture := AAssetManager.GetTexture('ascii');
-    ATextBox.boxTexture := AAssetManager.GetTexture('panel');
 
     // 새로운 Entity 추가하기
     AEntity := TEntity.Create;
     ACompPosition := TPositionComponent.Create('position');
     ACompPosition.X := 60;
     ACompPosition.Y := 80;
-    AEntity.position := ACompPosition;
-    AddedEntities.Add(AEntity);
 
+    AScene := TScene.Create(Self.AAssetManager, ARenderer);
   finally
     CloseFile(configFile);
   end;
@@ -160,8 +141,6 @@ end;
 procedure TEngine.GameLoop;
 var
   sdlEvents: PSDL_Event;
-  AEntity: TEntity;
-  CompPosition: TPositionComponent;
   CurrentTime: uint32;
   LastTime: uint32;
   DeltaTime: uint32;
@@ -214,7 +193,6 @@ begin
 
     GameUpdate(dt);
 
-
     GameRender();
 
     if DeltaTime <= 16 then
@@ -228,50 +206,14 @@ end;
 
 
 procedure TEngine.GameUpdate(dt: real);
-var
-  AEntity: TEntity;
 begin
-
-  // 추가된 Entity 항목을 모두 더한다.
-  for AEntity in AddedEntities do
-  begin
-    FEntities.Add(AEntity);
-  end;
-  ATextBox.Text := Format('%6d', [Round(dt * 1000)]);
-
-  AddedEntities.Clear;
-
+  AScene.SceneUpdate(dt);
 end;
 
 procedure TEngine.GameRender();
-var
-  itemTexture: PSDL_Texture;
 begin
-
-  SDL_RenderClear(ARenderer);
-
-  itemTexture := AAssetManager.GetTexture('items');
-  if itemTexture <> nil then
-    SDL_RenderCopy(ARenderer, itemTexture, nil, nil);
-
-  ATextBox.DrawPanel(ARenderer);
-  { ATextBox.DrawString(ARenderer,
-    'ABCDEFG ijkl 123 가각단댕. 세상은 더 이상 커질 수 없을 정도로 커진다. 텍스트의 크기도 마찬가지. 점점 커진다.');
-    }
-  ATextBox.Draw(ARenderer);
-  SDL_RenderPresent(ARenderer);
-
-  //DebugEntities;
+  AScene.SceneRender;
 end;
 
-procedure TEngine.DebugEntities();
-var
-  AEntity: TEntity;
-begin
-  for AEntity in FEntities do
-  begin
-    WriteLn(' X : ', AEntity.position.X, ' , Y : ', AEntity.position.Y);
-  end;
-end;
 
 end.

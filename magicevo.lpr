@@ -10,7 +10,11 @@ uses
   LogUtil,
   hangul,
   textbox,
-  entity, camera, animation, keyinput;
+  entity,
+  camera,
+  animation,
+  keyinput,
+  component, scene, listutil;
 
 var
   AEngine: TEngine;

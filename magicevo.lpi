@@ -80,6 +80,18 @@
         <IsPartOfProject Value="True"/>
         <UnitName Value="KeyInput"/>
       </Unit>
+      <Unit>
+        <Filename Value="component.pas"/>
+        <IsPartOfProject Value="True"/>
+      </Unit>
+      <Unit>
+        <Filename Value="scene.pas"/>
+        <IsPartOfProject Value="True"/>
+      </Unit>
+      <Unit>
+        <Filename Value="listutil.pas"/>
+        <IsPartOfProject Value="True"/>
+      </Unit>
     </Units>
   </ProjectOptions>
   <CompilerOptions>
