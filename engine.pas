@@ -198,7 +198,7 @@ begin
 
     GameRender();
 
-    if DeltaTime <= 16 then
+    if DeltaTime < 16 then
     begin
       SDL_Delay(16 - DeltaTime);
     end;
