@@ -5,20 +5,19 @@ unit scene;
 interface
 
 uses
-  Classes, SysUtils, asset_manager, sdl2, entity, Generics.Collections, textbox;
+  Classes, SysUtils, asset_manager, sdl2, entity, Generics.Collections;
 
 type
 
-  ESceneType = (title_scene, map_scene, battle_scene, end_scene);
+  ESceneType = (void_scene, title_scene, map_scene, battle_scene, end_scene);
 
   TScene = class
-  private
+  protected
     AAssetManager: TAssetManager;
     ASceneType: ESceneType;
     ARenderer: PSDL_Renderer;
     AEntities: specialize TList<TEntity>;
     AddedEntities: specialize TList<TEntity>;
-    ATextBox: TTextBox;
   public
     constructor Create(AM: TAssetManager; AR: PSDL_Renderer);
     destructor Destroy; override;
@@ -26,6 +25,7 @@ type
     procedure SceneRender;
     property Renderer: PSDL_Renderer read ARenderer write ARenderer;
     property AssetManager: TassetManager read AAssetManager write AAssetManager;
+    property SceneType: ESceneType read ASceneType;
 
   end;
 
@@ -37,15 +37,7 @@ begin
   ARenderer := AR;
   AEntities := specialize TList<TEntity>.Create;
   AddedEntities := specialize TList<TEntity>.Create;
-  ATextBox := TTextBox.Create(0, 0, 192, 32, 4, 4);
-
-  // 텍스트박스 폰트 설정
-  ATextBox.korFontTexture := AAssetManager.GetTexture('hangul');
-  ATextBox.engFontTexture := AAssetManager.GetTexture('ascii');
-  ATextBox.boxTexture := AAssetManager.GetTexture('panel');
-
-  If Assigned(ATextBox.boxTexture) Then
-     WriteLn(' Panel texture ');
+  ASceneType:= void_scene;
 
 end;
 
@@ -53,7 +45,6 @@ destructor TScene.Destroy;
 var
   AEntity: TEntity;
 begin
-  ATextBox.Free;
   for AEntity in AEntities do
   begin
     AEntity.Free;
@@ -68,7 +59,6 @@ var
   SubEntities: specialize TList<TEntity>;
 begin
 
-  ATextBox.Text := Format('%4d', [Trunc(dt * 1000)]);
 
   // 삭제된 Entity 항목을 모두 지운다.
   SubEntities := specialize TList<TEntity>.Create;
@@ -105,12 +95,6 @@ begin
   if itemTexture <> nil then
     SDL_RenderCopy(ARenderer, itemTexture, nil, nil);
 
-  ATextBox.DrawPanel(ARenderer);
-
-    { ATextBox.DrawString(ARenderer,
-      'ABCDEFG ijkl 123 가각단댕. 세상은 더 이상 커질 수 없을 정도로 커진다. 텍스트의 크기도 마찬가지. 점점 커진다.');
-    }
-  ATextBox.Draw(ARenderer);
   SDL_RenderPresent(ARenderer);
 
 end;

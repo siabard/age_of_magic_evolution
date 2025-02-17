@@ -6,8 +6,8 @@ interface
 
 
 uses
-  Classes, SysUtils, Sdl2, asset_manager, entity, component, LogUtil,
-  scene, Generics.Collections;
+  Classes, SysUtils, Sdl2, asset_manager, component, LogUtil,
+  scene, scene_map, Generics.Collections;
 
 type
   TEngine = class
@@ -100,7 +100,6 @@ var
   config: string;
   Fields: TStringList;
   AScene: TScene;
-  ACompPosition: TPositionComponent;
 begin
   Fields := TStringList.Create;
   Fields.Delimiter := #9; // 탭 문자
@@ -134,7 +133,7 @@ begin
       end;
     end;
 
-    AScene := TScene.Create(Self.AAssetManager, ARenderer);
+    AScene := TSceneMap.Create(AAssetManager, ARenderer);
     AScenes.Add(AScene);
   finally
     CloseFile(configFile);
@@ -215,7 +214,13 @@ var
 begin
   for AScene in AScenes do
   begin
-    AScene.SceneUpdate(dt);
+    case Ascene.SceneType of
+      map_scene: begin
+        TSceneMap(AScene).SceneUpdate(dt);
+      end;
+      else
+        Ascene.SceneUpdate(dt);
+    end;
 
   end;
 
@@ -227,7 +232,13 @@ var
 begin
   for AScene in AScenes do
   begin
-    AScene.SceneRender;
+    case Ascene.SceneType of
+      map_scene: begin
+        TSceneMap(AScene).SceneRender;
+      end;
+      else
+        AScene.SceneRender;
+    end;
 
   end;
 end;

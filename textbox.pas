@@ -74,18 +74,17 @@ end;
 
 procedure TTextBox.SetBoxTexture(texture: PSDL_Texture);
 begin
-  Self.ABoxTexture := texture;
-
+  ABoxTexture := texture;
 end;
 
 procedure TTextBox.SetKorFontTexture(texture: PSDL_Texture);
 begin
-  Self.AKorFontTexture := texture;
+  AKorFontTexture := texture;
 end;
 
 procedure TTextBox.SetEngFontTexture(texture: PSDL_Texture);
 begin
-  Self.AEngFontTexture := texture;
+  AEngFontTexture := texture;
 end;
 
 procedure TTextBox.DrawAsciiCharacter(renderer: PSDL_Renderer; Tx: integer;

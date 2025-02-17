@@ -7,8 +7,8 @@
       <Unit>
         <Filename Value="magicevo.lpr"/>
         <IsPartOfProject Value="True"/>
-        <TopLine Value="24"/>
-        <CursorPos X="46" Y="39"/>
+        <TopLine Value="2"/>
+        <CursorPos X="33" Y="17"/>
         <UsageCount Value="410"/>
         <Loaded Value="True"/>
       </Unit>
@@ -17,17 +17,17 @@
         <IsPartOfProject Value="True"/>
         <IsVisibleTab Value="True"/>
         <EditorIndex Value="7"/>
-        <TopLine Value="204"/>
-        <CursorPos X="5" Y="231"/>
+        <TopLine Value="215"/>
+        <CursorPos X="32" Y="222"/>
         <UsageCount Value="410"/>
         <Loaded Value="True"/>
       </Unit>
       <Unit>
         <Filename Value="asset_manager.pas"/>
         <IsPartOfProject Value="True"/>
-        <EditorIndex Value="12"/>
-        <TopLine Value="73"/>
-        <CursorPos X="52" Y="80"/>
+        <EditorIndex Value="13"/>
+        <TopLine Value="65"/>
+        <CursorPos X="31" Y="75"/>
         <UsageCount Value="410"/>
         <Loaded Value="True"/>
       </Unit>
@@ -43,7 +43,7 @@
         <Filename Value="hangul.pas"/>
         <IsPartOfProject Value="True"/>
         <EditorIndex Value="6"/>
-        <TopLine Value="39"/>
+        <TopLine Value="38"/>
         <CursorPos X="69" Y="197"/>
         <UsageCount Value="310"/>
         <Loaded Value="True"/>
@@ -52,8 +52,8 @@
         <Filename Value="textbox.pas"/>
         <IsPartOfProject Value="True"/>
         <EditorIndex Value="1"/>
-        <TopLine Value="205"/>
-        <CursorPos X="49" Y="223"/>
+        <TopLine Value="46"/>
+        <CursorPos X="3" Y="13"/>
         <UsageCount Value="250"/>
         <Loaded Value="True"/>
       </Unit>
@@ -80,7 +80,7 @@
         <EditorIndex Value="2"/>
         <TopLine Value="8"/>
         <CursorPos X="36" Y="84"/>
-        <UsageCount Value="122"/>
+        <UsageCount Value="126"/>
         <Loaded Value="True"/>
       </Unit>
       <Unit>
@@ -89,7 +89,7 @@
         <EditorIndex Value="3"/>
         <TopLine Value="4"/>
         <CursorPos X="13" Y="12"/>
-        <UsageCount Value="120"/>
+        <UsageCount Value="124"/>
         <Loaded Value="True"/>
       </Unit>
       <Unit>
@@ -97,7 +97,7 @@
         <IsPartOfProject Value="True"/>
         <EditorIndex Value="5"/>
         <CursorPos X="45" Y="16"/>
-        <UsageCount Value="120"/>
+        <UsageCount Value="124"/>
         <Loaded Value="True"/>
       </Unit>
       <Unit>
@@ -106,7 +106,7 @@
         <UnitName Value="KeyInput"/>
         <EditorIndex Value="4"/>
         <CursorPos X="26" Y="70"/>
-        <UsageCount Value="111"/>
+        <UsageCount Value="115"/>
         <Loaded Value="True"/>
       </Unit>
       <Unit>
@@ -114,16 +114,24 @@
         <IsPartOfProject Value="True"/>
         <EditorIndex Value="9"/>
         <CursorPos X="35" Y="56"/>
-        <UsageCount Value="82"/>
+        <UsageCount Value="86"/>
         <Loaded Value="True"/>
       </Unit>
       <Unit>
         <Filename Value="scene.pas"/>
         <IsPartOfProject Value="True"/>
         <EditorIndex Value="10"/>
-        <TopLine Value="27"/>
-        <CursorPos X="31" Y="40"/>
-        <UsageCount Value="67"/>
+        <TopLine Value="14"/>
+        <CursorPos X="12" Y="15"/>
+        <UsageCount Value="71"/>
+        <Loaded Value="True"/>
+      </Unit>
+      <Unit>
+        <Filename Value="listutil.pas"/>
+        <IsPartOfProject Value="True"/>
+        <EditorIndex Value="12"/>
+        <CursorPos X="42" Y="8"/>
+        <UsageCount Value="69"/>
         <Loaded Value="True"/>
       </Unit>
       <Unit>
@@ -131,129 +139,26 @@
         <EditorIndex Value="-1"/>
         <TopLine Value="40"/>
         <CursorPos X="53" Y="55"/>
-        <UsageCount Value="163"/>
+        <UsageCount Value="162"/>
       </Unit>
       <Unit>
         <Filename Value="../../../.local/lazarus/fpc/3.2.2/sources/rtl/inc/mathh.inc"/>
         <EditorIndex Value="-1"/>
         <TopLine Value="99"/>
         <CursorPos X="19" Y="114"/>
-        <UsageCount Value="6"/>
+        <UsageCount Value="5"/>
       </Unit>
       <Unit>
-        <Filename Value="listutil.pas"/>
+        <Filename Value="scene_map.pas"/>
         <IsPartOfProject Value="True"/>
         <EditorIndex Value="11"/>
-        <CursorPos X="42" Y="8"/>
-        <UsageCount Value="65"/>
+        <TopLine Value="40"/>
+        <CursorPos X="26" Y="51"/>
+        <UsageCount Value="22"/>
         <Loaded Value="True"/>
       </Unit>
     </Units>
     <JumpHistory HistoryIndex="29">
-      <Position>
-        <Filename Value="scene.pas"/>
-        <Caret Line="60" Column="14" TopLine="43"/>
-      </Position>
-      <Position>
-        <Filename Value="engine.pas"/>
-        <Caret Line="222" Column="32" TopLine="194"/>
-      </Position>
-      <Position>
-        <Filename Value="scene.pas"/>
-        <Caret Line="69" Column="20" TopLine="55"/>
-      </Position>
-      <Position>
-        <Filename Value="engine.pas"/>
-        <Caret Line="27" Column="33" TopLine="20"/>
-      </Position>
-      <Position>
-        <Filename Value="listutil.pas"/>
-        <Caret Line="9" Column="76"/>
-      </Position>
-      <Position>
-        <Filename Value="listutil.pas"/>
-        <Caret Line="12"/>
-      </Position>
-      <Position>
-        <Filename Value="engine.pas"/>
-        <Caret Line="213" Column="21" TopLine="189"/>
-      </Position>
-      <Position>
-        <Filename Value="scene.pas"/>
-        <Caret Line="102" Column="33" TopLine="82"/>
-      </Position>
-      <Position>
-        <Filename Value="engine.pas"/>
-        <Caret Line="115" Column="42" TopLine="108"/>
-      </Position>
-      <Position>
-        <Filename Value="scene.pas"/>
-        <Caret Line="105" Column="6" TopLine="81"/>
-      </Position>
-      <Position>
-        <Filename Value="textbox.pas"/>
-        <Caret Line="43" Column="15" TopLine="29"/>
-      </Position>
-      <Position>
-        <Filename Value="scene.pas"/>
-        <Caret Line="103" Column="24" TopLine="81"/>
-      </Position>
-      <Position>
-        <Filename Value="engine.pas"/>
-        <Caret Line="196" Column="10" TopLine="176"/>
-      </Position>
-      <Position>
-        <Filename Value="engine.pas"/>
-        <Caret Line="26" Column="15" TopLine="10"/>
-      </Position>
-      <Position>
-        <Filename Value="engine.pas"/>
-        <Caret Line="212" Column="3" TopLine="191"/>
-      </Position>
-      <Position>
-        <Filename Value="scene.pas"/>
-        <Caret Line="22" Column="15" TopLine="7"/>
-      </Position>
-      <Position>
-        <Filename Value="scene.pas"/>
-        <Caret Line="107" Column="20" TopLine="81"/>
-      </Position>
-      <Position>
-        <Filename Value="textbox.pas"/>
-        <Caret Line="86" Column="43" TopLine="65"/>
-      </Position>
-      <Position>
-        <Filename Value="scene.pas"/>
-        <Caret Line="101" Column="21" TopLine="81"/>
-      </Position>
-      <Position>
-        <Filename Value="scene.pas"/>
-        <Caret Line="41" Column="39" TopLine="20"/>
-      </Position>
-      <Position>
-        <Filename Value="asset_manager.pas"/>
-        <Caret Line="26" Column="24" TopLine="11"/>
-      </Position>
-      <Position>
-        <Filename Value="scene.pas"/>
-        <Caret Line="39" Column="43" TopLine="19"/>
-      </Position>
-      <Position>
-        <Filename Value="asset_manager.pas"/>
-        <Caret Line="26" Column="14" TopLine="11"/>
-      </Position>
-      <Position>
-        <Filename Value="engine.pas"/>
-        <Caret Line="156" Column="52" TopLine="174"/>
-      </Position>
-      <Position>
-        <Filename Value="engine.pas"/>
-        <Caret Line="74" Column="15" TopLine="60"/>
-      </Position>
-      <Position>
-        <Filename Value="engine.pas"/>
-        <Caret Line="234" Column="29" TopLine="209"/>
-      </Position>
       <Position>
         <Filename Value="engine.pas"/>
         <Caret Line="136" TopLine="125"/>
@@ -269,6 +174,110 @@
       <Position>
         <Filename Value="engine.pas"/>
         <Caret Line="228" Column="24" TopLine="201"/>
+      </Position>
+      <Position>
+        <Filename Value="scene.pas"/>
+        <Caret Line="21" Column="29" TopLine="4"/>
+      </Position>
+      <Position>
+        <Filename Value="scene_map.pas"/>
+        <Caret Line="11" Column="68"/>
+      </Position>
+      <Position>
+        <Filename Value="scene_map.pas"/>
+        <Caret Line="57" Column="9" TopLine="51"/>
+      </Position>
+      <Position>
+        <Filename Value="scene.pas"/>
+        <Caret Line="92" Column="14" TopLine="77"/>
+      </Position>
+      <Position>
+        <Filename Value="magicevo.lpr"/>
+        <Caret Line="17" Column="33" TopLine="2"/>
+      </Position>
+      <Position>
+        <Filename Value="scene.pas"/>
+        <Caret Line="38" Column="61" TopLine="24"/>
+      </Position>
+      <Position>
+        <Filename Value="scene.pas"/>
+        <Caret Line="95" Column="42" TopLine="70"/>
+      </Position>
+      <Position>
+        <Filename Value="scene_map.pas"/>
+        <Caret Line="20" Column="37"/>
+      </Position>
+      <Position>
+        <Filename Value="scene_map.pas"/>
+        <Caret Line="19" Column="15" TopLine="4"/>
+      </Position>
+      <Position>
+        <Filename Value="engine.pas"/>
+        <Caret Line="234" Column="28" TopLine="207"/>
+      </Position>
+      <Position>
+        <Filename Value="scene_map.pas"/>
+        <Caret Line="32" Column="62" TopLine="7"/>
+      </Position>
+      <Position>
+        <Filename Value="scene.pas"/>
+        <Caret Line="28" Column="52" TopLine="28"/>
+      </Position>
+      <Position>
+        <Filename Value="scene_map.pas"/>
+        <Caret Line="34" Column="11" TopLine="7"/>
+      </Position>
+      <Position>
+        <Filename Value="engine.pas"/>
+        <Caret Line="136" Column="45" TopLine="111"/>
+      </Position>
+      <Position>
+        <Filename Value="scene_map.pas"/>
+        <Caret Line="17" Column="17" TopLine="2"/>
+      </Position>
+      <Position>
+        <Filename Value="scene_map.pas"/>
+        <Caret Line="28" Column="3" TopLine="26"/>
+      </Position>
+      <Position>
+        <Filename Value="scene_map.pas"/>
+        <Caret Line="31" Column="28" TopLine="22"/>
+      </Position>
+      <Position>
+        <Filename Value="scene_map.pas"/>
+        <Caret Line="32" Column="16" TopLine="22"/>
+      </Position>
+      <Position>
+        <Filename Value="scene_map.pas"/>
+        <Caret Line="42" Column="28" TopLine="24"/>
+      </Position>
+      <Position>
+        <Filename Value="scene_map.pas"/>
+        <Caret Line="39" Column="25" TopLine="34"/>
+      </Position>
+      <Position>
+        <Filename Value="textbox.pas"/>
+        <Caret Line="33" Column="14" TopLine="18"/>
+      </Position>
+      <Position>
+        <Filename Value="textbox.pas"/>
+        <Caret Line="25" Column="28" TopLine="19"/>
+      </Position>
+      <Position>
+        <Filename Value="textbox.pas"/>
+        <Caret Line="33" Column="75" TopLine="18"/>
+      </Position>
+      <Position>
+        <Filename Value="textbox.pas"/>
+        <Caret Line="87" Column="3" TopLine="57"/>
+      </Position>
+      <Position>
+        <Filename Value="scene_map.pas"/>
+        <Caret Line="33" TopLine="13"/>
+      </Position>
+      <Position>
+        <Filename Value="scene_map.pas"/>
+        <Caret Line="15" Column="5" TopLine="13"/>
       </Position>
     </JumpHistory>
     <RunParams>
