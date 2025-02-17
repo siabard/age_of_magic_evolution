@@ -7,7 +7,7 @@ interface
 
 uses
   Classes, SysUtils, Sdl2, asset_manager, entity, component, LogUtil,
-  textbox, Generics.Collections, scene, KeyInput;
+  textbox, Generics.Collections, scene, KeyInput, scene_map;
 
 type
   TEngine = class
@@ -16,7 +16,7 @@ type
     ARenderer: PSDL_Renderer;
     Running: boolean;
     AAssetManager: TAssetManager;
-    AScene: TScene;
+    AScenes: specialize TList<TScene>;
     AKeyInput: TKeyInput;
 
   public
@@ -54,15 +54,27 @@ begin
   end;
 
   AAssetManager := TAssetManager.Create(ARenderer);
+
   AKeyInput := TKeyInput.Create;
+
+  { Scene 리스트를 생성 }
+  AScenes := specialize TList<TScene>.Create;
   Running := True;
 end;
 
 
 destructor TEngine.Destroy;
 var
-  AEntity: TEntity;
+  tmpScene: TScene;
 begin
+  {---------------------------------------------------------------------------}
+  { Remove All Scenes                                                         }
+  {---------------------------------------------------------------------------}
+  for tmpScene in AScenes do
+  begin
+    tmpScene.Free;
+  end;
+  AScenes.Free;
 
   {---------------------------------------------------------------------------}
   { Gabbage Collection                                                        }
@@ -92,7 +104,7 @@ var
   configFile: TextFile;
   config: string;
   Fields: TStringList;
-  ACompPosition: TPositionComponent;
+  AScene: TScene;
 begin
   Fields := TStringList.Create;
   Fields.Delimiter := #9; // 탭 문자
@@ -126,7 +138,8 @@ begin
       end;
     end;
 
-    AScene := TScene.Create(Self.AAssetManager, ARenderer, AKeyInput);
+    AScene := TSceneMap.Create(AAssetManager, ARenderer, AKeyInput);
+    AScenes.Add(AScene);
   finally
     CloseFile(configFile);
   end;
@@ -184,7 +197,7 @@ begin
 
     GameRender();
 
-    if DeltaTime <= 16 then
+    if DeltaTime < 16 then
     begin
       SDL_Delay(16 - DeltaTime);
     end;
@@ -195,13 +208,32 @@ end;
 
 
 procedure TEngine.GameUpdate(dt: real);
+var
+  AScene: TScene;
 begin
-  AScene.SceneUpdate(dt);
+  for AScene in AScenes do
+  begin
+    if AScene is TSceneMap then
+      TSceneMap(AScene).SceneUpdate(dt)
+    else
+      Ascene.SceneUpdate(dt);
+
+  end;
+
 end;
 
 procedure TEngine.GameRender();
+var
+  AScene: TScene;
 begin
-  AScene.SceneRender;
+  for AScene in AScenes do
+  begin
+    if AScene is TSceneMap then
+      TSceneMap(AScene).SceneRender
+    else
+      AScene.SceneRender;
+
+  end;
 end;
 
 
