@@ -8,9 +8,13 @@ uses
   Classes, SysUtils, asset_manager, sdl2, entity, Generics.Collections, textbox;
 
 type
+
+  ESceneType = (title_scene, map_scene, battle_scene, end_scene);
+
   TScene = class
   private
     AAssetManager: TAssetManager;
+    ASceneType: ESceneType;
     ARenderer: PSDL_Renderer;
     AEntities: specialize TList<TEntity>;
     AddedEntities: specialize TList<TEntity>;

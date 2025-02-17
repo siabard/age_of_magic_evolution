@@ -7,7 +7,7 @@ interface
 
 uses
   Classes, SysUtils, Sdl2, asset_manager, entity, component, LogUtil,
-  textbox, Generics.Collections, scene;
+  scene, Generics.Collections;
 
 type
   TEngine = class
@@ -16,7 +16,7 @@ type
     ARenderer: PSDL_Renderer;
     Running: boolean;
     AAssetManager: TAssetManager;
-    AScene: TScene;
+    AScenes: specialize TList<TScene>;
 
   public
     constructor Create;
@@ -54,14 +54,24 @@ begin
 
   AAssetManager := TAssetManager.Create(ARenderer);
 
+  { Scene 리스트를 생성 }
+  AScenes := specialize TList<TScene>.Create;
   Running := True;
 end;
 
 
 destructor TEngine.Destroy;
 var
-  AEntity: TEntity;
+  tmpScene: TScene;
 begin
+  {---------------------------------------------------------------------------}
+  { Remove All Scenes                                                         }
+  {---------------------------------------------------------------------------}
+  for tmpScene in AScenes do
+  begin
+    tmpScene.Free;
+  end;
+  AScenes.Free;
 
   {---------------------------------------------------------------------------}
   { Gabbage Collection                                                        }
@@ -89,7 +99,7 @@ var
   configFile: TextFile;
   config: string;
   Fields: TStringList;
-  AEntity: TEntity;
+  AScene: TScene;
   ACompPosition: TPositionComponent;
 begin
   Fields := TStringList.Create;
@@ -124,14 +134,8 @@ begin
       end;
     end;
 
-
-    // 새로운 Entity 추가하기
-    AEntity := TEntity.Create;
-    ACompPosition := TPositionComponent.Create('position');
-    ACompPosition.X := 60;
-    ACompPosition.Y := 80;
-
     AScene := TScene.Create(Self.AAssetManager, ARenderer);
+    AScenes.Add(AScene);
   finally
     CloseFile(configFile);
   end;
@@ -206,13 +210,26 @@ end;
 
 
 procedure TEngine.GameUpdate(dt: real);
+var
+  AScene: TScene;
 begin
-  AScene.SceneUpdate(dt);
+  for AScene in AScenes do
+  begin
+    AScene.SceneUpdate(dt);
+
+  end;
+
 end;
 
 procedure TEngine.GameRender();
+var
+  AScene: TScene;
 begin
-  AScene.SceneRender;
+  for AScene in AScenes do
+  begin
+    AScene.SceneRender;
+
+  end;
 end;
 
 
