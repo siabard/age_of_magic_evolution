@@ -5,18 +5,19 @@ unit scene;
 interface
 
 uses
-  Classes, SysUtils, asset_manager, sdl2, entity, Generics.Collections, textbox;
+  Classes, SysUtils, asset_manager, sdl2, entity, Generics.Collections, textbox, KeyInput;
 
 type
   TScene = class
   private
     AAssetManager: TAssetManager;
     ARenderer: PSDL_Renderer;
+    AKeyInput: TKeyInput;
     AEntities: specialize TList<TEntity>;
     AddedEntities: specialize TList<TEntity>;
     ATextBox: TTextBox;
   public
-    constructor Create(AM: TAssetManager; AR: PSDL_Renderer);
+    constructor Create(AM: TAssetManager; AR: PSDL_Renderer; AK: TKeyInput);
     destructor Destroy; override;
     procedure SceneUpdate(dt: real);
     procedure SceneRender;
@@ -27,7 +28,7 @@ type
 
 implementation
 
-constructor TScene.Create(AM: TAssetManager; AR: PSDL_Renderer);
+constructor TScene.Create(AM: TAssetManager; AR: PSDL_Renderer; AK: TKeyInput);
 begin
   AAssetManager := AM;
   ARenderer := AR;
@@ -42,6 +43,9 @@ begin
 
   If Assigned(ATextBox.boxTexture) Then
      WriteLn(' Panel texture ');
+
+  If Assigned(AK) Then
+     AKeyInput := AK;
 
 end;
 

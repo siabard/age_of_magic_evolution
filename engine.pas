@@ -7,7 +7,7 @@ interface
 
 uses
   Classes, SysUtils, Sdl2, asset_manager, entity, component, LogUtil,
-  textbox, Generics.Collections, scene;
+  textbox, Generics.Collections, scene, KeyInput;
 
 type
   TEngine = class
@@ -17,11 +17,12 @@ type
     Running: boolean;
     AAssetManager: TAssetManager;
     AScene: TScene;
+    AKeyInput: TKeyInput;
 
   public
     constructor Create;
     destructor Destroy; override;
-    procedure GameInit(ConfigPath: PChar);
+    procedure GameInit(ConfigPath: pchar);
     procedure GameLoop;
     procedure GameUpdate(dt: real);
     procedure GameRender();
@@ -53,7 +54,7 @@ begin
   end;
 
   AAssetManager := TAssetManager.Create(ARenderer);
-
+  AKeyInput := TKeyInput.Create;
   Running := True;
 end;
 
@@ -79,17 +80,18 @@ begin
     SDL_DestroyWindow(AWindow);
   end;
 
+  FreeAndNil(AKeyInput);
+
 end;
 
 {------------------------------------------------------------------------------}
 { 환경설정 파일 읽어 들이기                                                    }
 {------------------------------------------------------------------------------}
-procedure TEngine.GameInit(ConfigPath: PChar);
+procedure TEngine.GameInit(ConfigPath: pchar);
 var
   configFile: TextFile;
   config: string;
   Fields: TStringList;
-  AEntity: TEntity;
   ACompPosition: TPositionComponent;
 begin
   Fields := TStringList.Create;
@@ -124,14 +126,7 @@ begin
       end;
     end;
 
-
-    // 새로운 Entity 추가하기
-    AEntity := TEntity.Create;
-    ACompPosition := TPositionComponent.Create('position');
-    ACompPosition.X := 60;
-    ACompPosition.Y := 80;
-
-    AScene := TScene.Create(Self.AAssetManager, ARenderer);
+    AScene := TScene.Create(Self.AAssetManager, ARenderer, AKeyInput);
   finally
     CloseFile(configFile);
   end;
@@ -153,11 +148,12 @@ begin
   LogDebug('Show Screen');
 
   LastTime := SDL_GetTicks;
+
+  AKeyInput.InitKeys;
+
+  new(sdlEvents);
   while Running = True do
   begin
-
-    new(sdlEvents);
-
 
     // Event Loop
     while SDL_PollEvent(sdlEvents) = 1 do
@@ -168,19 +164,12 @@ begin
         SDL_KEYDOWN: begin
           case sdlEvents^.key.keysym.sym of
             SDLK_ESCAPE: Running := False;
-            SDLK_i: begin
-              // 임시로 새로운 엔터티를 넣기
-              (* Entity 를 생성하는 방법은 아래와 같다.
-              AEntity := TEntity.Create;
-              CompPosition := TPositionComponent.Create('position');
-              CompPosition.X := 11;
-              CompPosition.Y := 12;
-              AEntity.position := CompPosition;
-              AddedEntities.Add(AEntity);
-              *)
-            end;
-
+            else
+              AKeyInput.KeyDownEvent(sdlEvents^.key.keysym.sym);
           end;
+        end;
+        SDL_KEYUP: begin
+          AKeyInput.KeyDownEvent(sdlEvents^.key.keysym.sym);
         end;
       end;
     end;
