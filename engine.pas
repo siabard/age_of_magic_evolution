@@ -7,7 +7,8 @@ interface
 
 uses
   Classes, SysUtils, Sdl2, asset_manager, entity, component, LogUtil,
-  textbox, Generics.Collections, scene, KeyInput, scene_map;
+  textbox, Generics.Collections, scene, KeyInput, scene_map, atlas,
+  animation, game_types;
 
 type
   TEngine = class
@@ -22,7 +23,7 @@ type
   public
     constructor Create;
     destructor Destroy; override;
-    procedure GameInit(ConfigPath: pchar);
+    procedure GameInit(ConfigPath: PChar);
     procedure GameLoop;
     procedure GameUpdate(dt: real);
     procedure GameRender();
@@ -99,12 +100,25 @@ end;
 {------------------------------------------------------------------------------}
 { 환경설정 파일 읽어 들이기                                                    }
 {------------------------------------------------------------------------------}
-procedure TEngine.GameInit(ConfigPath: pchar);
+procedure TEngine.GameInit(ConfigPath: PChar);
 var
   configFile: TextFile;
   config: string;
   Fields: TStringList;
   AScene: TScene;
+  tile_width: integer;
+  tile_height: integer;
+  code: integer;
+  itemsAsset: TAtlas;
+  I: integer;
+  AnimationName: string;
+  AtlasName: string;
+  AAnimation: TAnimation;
+  AAtlas: TAtlas;
+  FrameStart: integer;
+  FrameSize: integer;
+  SwordAnimation: TAnimation;
+  SwordFrame: specialize TList<RRect>;
 begin
   Fields := TStringList.Create;
   Fields.Delimiter := #9; // 탭 문자
@@ -122,10 +136,34 @@ begin
         // Config를 Split 한다.
         Fields.DelimitedText := config;
 
-        if Fields[0] = 'texture' then
-        begin
-          // Texture Loading
-          AAssetManager.LoadTexture(Fields[1], pansichar(Fields[2]));
+        case Fields[0] of
+          'texture': begin
+            // Texture Loading
+            AAssetManager.LoadTexture(Fields[1], pansichar(Fields[2]));
+          end;
+          'atlas': begin
+            // atlas making
+            // atlas [atlas name] [texture name] [tile-width] [tile-height]
+            Val(Fields[3], tile_width, code);
+            Val(Fields[4], tile_height, code);
+            AAssetManager.AddAtlas(Fields[1], Fields[2], tile_width, tile_height);
+          end;
+          'animation': begin
+            { 주어진 animation 이름에 해당하는 Frame의 Rect를 얻는다.
+              해당하는 animation의 Frame이 들어가있는 Rect의 List는
+              Atlas에 있다.
+            }
+            // animation [animation name] [atlas name] [start frame] [frame size]
+            // animation sword items 1 2
+            AnimationName := Fields[1];
+            AtlasName := Fields[2];
+            Val(Fields[3], FrameStart, Code);
+            Val(Fields[4], FrameSize, Code);
+            AAtlas := AAssetManager.GetAtlas(AtlasName);
+            AAnimation := TAnimation.Create(AnimationName, AAtlas.TextureName,
+              FrameStart, FrameSize, AAtlas.Rects);
+            AAssetManager.AddAnimation(AnimationName, AAnimation);
+          end;
         end;
       end;
 
@@ -138,7 +176,41 @@ begin
       end;
     end;
 
+    // 디버그 Atlas
+    {
+    itemsAsset := AAssetManager.GetAtlas('items');
+    for I := 0 to itemsAsset.Rects.Count - 1 do
+    begin
+      Write(' RX: ', itemsAsset.Rects[i].RX);
+      Write(' RY: ', itemsAsset.Rects[i].RY);
+      Write(' RW: ', itemsAsset.Rects[i].RW);
+      Write(' RH: ', itemsAsset.Rects[i].RH);
+      WriteLn();
+    end;
+    }
+    // 디버그 Animation
+    {
+    SwordAnimation := AAssetManager.GetAnimation('sword');
+    SwordFrame := SwordAnimation.GetFrames;
+    WriteLn(' sword animation ');
+    WriteLn(' texture name : ', SwordAnimation.TextureName);
+
+    WriteLn( ' Frame Size ' , SwordFrame.Count);
+    for I := 0 to SwordFrame.Count - 1 do
+    begin
+      Write(' X: ', SwordFrame[I].RX);
+      Write(' Y: ', SwordFrame[I].RY);
+      Write(' W: ', SwordFrame[I].RW);
+      Write(' H: ', SwordFrame[I].RH);
+      WriteLn();
+
+    end;
+    }
+
+    { Scene 생성 처리 }
     AScene := TSceneMap.Create(AAssetManager, ARenderer, AKeyInput);
+
+    { Scene 의 리소스 생성 (초기 엔터티등) }
     AScenes.Add(AScene);
   finally
     CloseFile(configFile);

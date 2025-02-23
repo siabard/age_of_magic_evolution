@@ -42,10 +42,24 @@ type
   TAnimationComponent = class(TComponent)
   private
     FAnimations: specialize THashMap<string, TAnimation>;
+    FCurrentAnimation: string;
+    FCurrentTick: integer;
+    FCurrentFrame: integer;
+    FCurrentMaxFrame: integer;
+    FDuration: integer;
+    FIsLoop: boolean;
   public
     constructor Create(cid: string);
     destructor Destroy; override;
     procedure SetAnimation(animationKey: string; animationValue: TAnimation);
+    procedure SetCurrentAnimation(animationKey: string);
+    property CurrentAnimation: string read FCurrentAnimation write SetCurrentAnimation;
+    property Duration: integer read FDuration write FDuration;
+    property IsLoop: boolean read FIsLoop write FIsLoop;
+    property CurrentTick: integer read FCurrentTick write FCurrentTick;
+    property CurrentFrame: integer read FCurrentFrame write FCurrentFrame;
+    property CurrentMaxFrame: integer read FCurrentmaxFrame write FCurrentMaxFrame;
+    property Animations: specialize THashMap<string, TAnimation> read FAnimations;
   end;
 
   TMovementComponent = class(TComponent)
@@ -60,8 +74,6 @@ type
   end;
 
 implementation
-
-
 
 constructor TComponent.Create(cid: string);
 begin
@@ -95,11 +107,31 @@ begin
 end;
 
 destructor TAnimationComponent.Destroy;
+begin
+
+  LogDebug('TAnimationComponent.Destroy');
+  FAnimations.Free;
+  inherited;
+end;
+
+procedure TAnimationComponent.SetCurrentAnimation(animationKey: string);
 var
   AAnimation: TAnimation;
 begin
-  FAnimations.Clear;
-  inherited;
+  if FAnimations.ContainsKey(animationKey) then
+  begin
+    FCurrentAnimation := animationKey;
+    FCurrentFrame := 0;
+    FCurrentTick := 0;
+    FAnimations.TryGetValue(animationKey, AAnimation);
+
+    if AAnimation <> nil then
+      FCurrentMaxFrame := AAnimation.GetFrameLength - 1
+    else
+      FCurrentMaxFrame := 0;
+
+  end;
+
 end;
 
 procedure TAnimationComponent.SetAnimation(animationKey: string;
@@ -108,7 +140,7 @@ begin
   FAnimations.Add(animationKey, animationValue);
 end;
 
-constructor TMovementComponent.Create(cid: String);
+constructor TMovementComponent.Create(cid: string);
 begin
   inherited;
   FType := movement_component;

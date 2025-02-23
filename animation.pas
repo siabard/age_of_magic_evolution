@@ -6,86 +6,88 @@ interface
 
 
 uses
-  SysUtils, Generics.Collections;
+  SysUtils, Generics.Collections, game_types;
 
 type
   TAnimation = class
   private
     FName: string;
     FTextureName: string;
-    FFrames: specialize TList<integer>;
-    FFrameLength: integer;
+    FFrameRects: specialize TList<RRect>;
   public
-    constructor Create(const AName, ATextureName: string;
-      AStartFrame, AFrameLength: integer);
+    constructor Create(const AName: string; ATextureName: string;
+      AStartFrame: integer; AFrameLength: integer;
+      FrameRects: specialize TList<RRect>);
     destructor Destroy; override;
     property Name: string read FName write FName;
     property TextureName: string read FTextureName write FTextureName;
-    function GetFrames: specialize TList<integer>;
+    function GetFrames: specialize TList<RRect>;
     function GetFrameLength: integer;
     procedure PrintAnimationInfo;
-    procedure SetFrame(FrameStart: integer; FrameEnd: integer);
+    procedure SetFrame(FrameStart: integer; FrameEnd: integer;
+      FrameRects: specialize TList<RRect>);
   end;
 
 implementation
 
-
-
-constructor TAnimation.Create(const AName, ATextureName: string;
-  AStartFrame, AFrameLength: integer);
+uses
+  LogUtil;
+constructor TAnimation.Create(const AName: string; ATextureName: string;
+  AStartFrame: integer; AFrameLength: integer; FrameRects: specialize TList<RRect>);
 var
   I, LastFrame: integer;
 begin
   FName := AName;
   FTextureName := ATextureName;
-  FFrameLength := AFrameLength;
-  FFrames := specialize TList<integer>.Create;
+  FFrameRects := specialize TList<RRect>.Create;
 
   LastFrame := AStartFrame + AFrameLength - 1;
-  for I := AStartFrame to LastFrame - 1 do
-    FFrames.Add(I);
+  for I := AStartFrame to LastFrame do
+  begin
+    WriteLn(' Frame ', I);
+    FFrameRects.Add(FrameRects[I]);
+  end;
 end;
 
 destructor TAnimation.Destroy;
 begin
-  FFrames.Free;
+  LogDebug('TAnimation.Destroy');
+  FFrameRects.Free;
   inherited Destroy;
 end;
 
 
-function TAnimation.GetFrames: specialize TList<integer>;
+function TAnimation.GetFrames: specialize TList<RRect>;
 begin
-  Result := FFrames;
+  Result := FFrameRects;
 end;
 
 function TAnimation.GetFrameLength: integer;
 begin
-  Result := FFrameLength;
+  Result := FFrameRects.Count;
 end;
 
 procedure TAnimation.PrintAnimationInfo;
 var
-  Frame: integer;
+  Frame: RRect;
 begin
   WriteLn('Animation Name: ', FName);
   WriteLn('Texture Name: ', FTextureName);
   Write('Frames: ');
-  for Frame in FFrames do
-    Write(Frame, ' ');
+  for Frame in FFrameRects do
+    Write(Frame.RX, Frame.RY, Frame.RW, Frame.RH);
   WriteLn;
-  WriteLn('Frame Length: ', FFrameLength);
 end;
 
-procedure TAnimation.SetFrame(FrameStart: integer; FrameEnd: integer);
+procedure TAnimation.SetFrame(FrameStart: integer; FrameEnd: integer;
+  FrameRects: specialize TList<RRect>);
 var
   I: integer;
 begin
-  FFrameLength :=
-    FrameEnd - FrameStart + 1;
-  FFrames.Clear;
+  FFrameRects.Clear;
   for I := FrameStart to FrameEnd do
   begin
-    FFrames.Add(I);
+    FFrameRects.Add(FrameRects[I]);
   end;
 end;
 

@@ -2,3 +2,10 @@ texture items resources/items.png
 texture hangul resources/hangul.png
 texture ascii resources/ascii.png
 texture panel resources/panel.png
+# Atlas : atlas [atlas name] [texture name] [tile-width] [tile-height]
+atlas items items 16 16
+# Animation : animation [animation name] [atlas name] [start frame] [frame size] [animation duration]
+animation sword items 1 2 300
+animation armor items 8 3 300
+bitmapfont hangul 16 16
+bitmapfont ascii 8 16

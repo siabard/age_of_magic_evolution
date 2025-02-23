@@ -7,7 +7,7 @@ interface
 
 uses
   Classes, SysUtils, sdl2, sdl2_image,
-  Generics.Collections, LogUtil, animation;
+  Generics.Collections, LogUtil, animation, atlas;
 
 type
 
@@ -15,9 +15,10 @@ type
 
   TAssetManager = class
   private
-    ASdlRenderer: PSDL_Renderer;
-    ATextures: TTextureDictionary;
-    AAnimations: specialize THashMap<string, TAnimation>;
+    FSdlRenderer: PSDL_Renderer;
+    FTextures: TTextureDictionary;
+    FAnimations: specialize THashMap<string, TAnimation>;
+    FATlas: specialize THashMap<string, TAtlas>;
   public
     constructor Create(BRenderer: PSDL_Renderer);
     destructor Destroy; override;
@@ -26,6 +27,9 @@ type
     function GetTexture(textureId: string): PSDL_Texture;
     procedure AddAnimation(animationId: string; animationValue: TAnimation);
     function GetAnimation(animationId: string): TAnimation;
+    procedure AddAtlas(atlasId: string; textureId: string; tile_width: integer;
+      tile_height: integer);
+    function GetAtlas(atlasId: String): TAtlas;
   end;
 
 
@@ -33,30 +37,38 @@ implementation
 
 constructor TAssetManager.Create(BRenderer: PSDL_Renderer);
 begin
-  ASdlRenderer := BRenderer;
-  ATextures := TTextureDictionary.Create;
-  AAnimations := specialize THashMap<string, TAnimation>.Create;
+  FSdlRenderer := BRenderer;
+  FTextures := TTextureDictionary.Create;
+  FAnimations := specialize THashMap<string, TAnimation>.Create;
+  FATlas := specialize THashMap<string, TAtlas>.Create;
 end;
 
 destructor TAssetManager.Destroy;
 var
   TextureValue: PSDL_Texture;
   AnimationValue: TAnimation;
+  AtlasValue: TAtlas;
 begin
-  for TextureValue in ATextures.Values do
+  for AtlasValue in FATlas.Values do
+  begin
+    AtlasValue.Free;
+  end;
+  FATlas.Free;
+
+  for AnimationValue in FAnimations.Values do
+  begin
+    AnimationValue.Free;
+  end;
+
+  FAnimations.Free;
+
+  for TextureValue in FTextures.Values do
   begin
     LogDebug('ASSET_MANAGER::Destroy Textuer');
 
     SDL_DestroyTexture(TextureValue);
   end;
-  ATextures.Free;
-
-  for AnimationValue in AAnimations.Values do
-  begin
-    AnimationValue.Free;
-  end;
-
-  AAnimations.Free;
+  FTextures.Free;
 
 end;
 
@@ -65,7 +77,7 @@ begin
   LogDebug('AssetManager::AddTexture::' + textureId);
   if PTexture <> nil then
   begin
-    ATextures.Add(textureId, PTexture);
+    FTextures.Add(textureId, PTexture);
   end
   else
   begin
@@ -77,7 +89,7 @@ function TAssetManager.GetTexture(textureId: string): PSDL_Texture;
 var
   SearchedValue: PSDL_Texture;
 begin
-  if ATextures.TryGetValue(textureId, SearchedValue) then
+  if FTextures.TryGetValue(textureId, SearchedValue) then
   begin
     Result := SearchedValue;
   end
@@ -93,7 +105,7 @@ var
   ATexture: PSDL_Texture;
 begin
   LogDebug(' Add New Texture : ' + textureId);
-  ATexture := IMG_LoadTexture(ASdlRenderer, Path);
+  ATexture := IMG_LoadTexture(FSdlRenderer, Path);
   Self.AddTexture(textureId, ATexture);
 end;
 
@@ -101,7 +113,7 @@ procedure TAssetManager.AddAnimation(animationId: string; animationValue: TAnima
 begin
   if animationValue <> nil then
   begin
-    AAnimations.Add(animationId, animationValue);
+    FAnimations.Add(animationId, animationValue);
   end;
 end;
 
@@ -109,7 +121,40 @@ function TAssetManager.GetAnimation(animationId: string): TAnimation;
 var
   SearchedValue: TAnimation;
 begin
-  if AAnimations.TryGetValue(animationId, SearchedValue) then
+  if FAnimations.TryGetValue(animationId, SearchedValue) then
+    Result := SearchedValue
+  else
+    Result := nil;
+end;
+
+procedure TAssetManager.AddAtlas(atlasId: string; textureId: string;
+  tile_width: integer; tile_height: integer);
+var
+  AtlasValue: TAtlas;
+  texture_width: integer;
+  texture_height: integer;
+  texture_for_atlas: PSDL_Texture;
+  texture_format: UInt32;
+  texture_access: integer;
+begin
+  AtlasValue := TAtlas.Create;
+  AtlasValue.TextureName := textureId;
+  texture_for_atlas := GetTexture(textureId);
+  if texture_for_atlas <> nil then
+  begin
+    SDL_QueryTexture(texture_for_atlas, @texture_format, @texture_access,
+      @texture_width, @texture_height);
+    AtlasValue.MakeAtlas(texture_width, texture_height, tile_width, tile_height);
+    FATlas.Add(atlasId, AtlasValue);
+  end;
+
+end;
+
+function TAssetManager.GetAtlas(atlasId: String): TAtlas;
+var
+  SearchedValue: TAtlas;
+begin
+  if FATlas.TryGetValue(atlasId, SearchedValue) then
     Result := SearchedValue
   else
     Result := nil;

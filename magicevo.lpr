@@ -14,7 +14,7 @@ uses
   camera,
   animation,
   keyinput,
-  component, scene_map, listutil;
+  component, scene_map, listutil, atlas, game_types, entity_manager;
 
 var
   AEngine: TEngine;
