@@ -225,6 +225,7 @@ var
   LastTime: uint32;
   DeltaTime: uint32;
   dt: real;
+  AScene: TScene;
 begin
 
   {---------------------------------------------------------------------------}
@@ -250,11 +251,21 @@ begin
           case sdlEvents^.key.keysym.sym of
             SDLK_ESCAPE: Running := False;
             else
+            begin
               AKeyInput.KeyDownEvent(sdlEvents^.key.keysym.sym);
+              for AScene in AScenes do
+              begin
+                AScene.DoAction(sdlEvents^.key.keysym.sym, action_start);
+              end;
+            end;
           end;
         end;
         SDL_KEYUP: begin
           AKeyInput.KeyDownEvent(sdlEvents^.key.keysym.sym);
+          for AScene in AScenes do
+          begin
+            AScene.DoAction(sdlEvents^.key.keysym.sym, action_stop);
+          end;
         end;
       end;
     end;

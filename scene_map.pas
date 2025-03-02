@@ -5,14 +5,15 @@ unit scene_map;
 interface
 
 uses
-  Classes, SysUtils, asset_manager, sdl2, textbox, scene, KeyInput;
+  Classes, SysUtils, asset_manager, sdl2, textbox, scene, KeyInput, entity;
 
 type
 
 
   TSceneMap = class(TScene)
   protected
-    ATextBox: TTextBox;
+    FTextBox: TTextBox;
+    FPlayer: TEntity;
   public
     constructor Create(AM: TAssetManager; AR: PSDL_Renderer; AK: TKeyInput);
     destructor Destroy; override;
@@ -20,13 +21,14 @@ type
     procedure SceneRender;
     procedure AnimationSystem(dt: real);
     procedure RenderSystem;
-
+    procedure DoAction(ACode: integer; AAct: EActionType); override;
+    procedure InputSystem;
+    procedure MovementSystem(dt: real);
   end;
 
 implementation
 
 uses
-  entity,
   component,
   animation,
   game_types,
@@ -38,39 +40,58 @@ var
   AAnimation: TAnimation;
   AAnimComp: TAnimationComponent;
   APosComp: TPositionComponent;
+  AInput: TInputComponent;
+  AMovement: TMovementComponent;
 begin
   inherited;
 
   FSceneType := map_scene;
-  ATextBox := TTextBox.Create(0, 0, 192, 32, 4, 4);
+  FTextBox := TTextBox.Create(0, 0, 192, 32, 4, 4);
 
-  ATextBox.boxTexture := FAssetManager.GetTexture('panel');
+  FTextBox.boxTexture := FAssetManager.GetTexture('panel');
   // 텍스트박스 폰트 설정
-  ATextBox.korFontTexture := FAssetManager.GetTexture('hangul');
-  ATextBox.engFontTexture := FAssetManager.GetTexture('ascii');
+  FTextBox.korFontTexture := FAssetManager.GetTexture('hangul');
+  FTextBox.engFontTexture := FAssetManager.GetTexture('ascii');
 
   // 신규 엔터티 생성해보기
   AEntity := FEntityManager.AddEntity();
+  FPlayer := AEntity;
   // animation sword 가짐
   AAnimation := FAssetManager.GetAnimation('sword');
   AAnimComp := TAnimationComponent.Create('sword anim');
   AAnimComp.SetAnimation('sword', AAnimation);
   AAnimComp.CurrentAnimation := 'sword';
-  AAnimComp.Duration:=300;
+  AAnimComp.Duration := 300;
   APosComp := TPositionComponent.Create('sword pos');
   APosComp.X := 120;
   APosComp.Y := 150;
   APosComp.PX := 120;
   APosComp.PY := 150;
 
+  AInput := TInputComponent.Create('player input');
+
+  AMovement := TMovementComponent.Create('player move');
+  AMovement.X := 0;
+  AMovement.Y := 0;
+
+  AEntity.input := AInput;
+
+  AEntity.movement := AMovement;
   AEntity.position := APosComp;
   AEntity.animation := AAnimComp;
 
+
+
+  { Action 설정 }
+  Self.RegisterAction(SDLK_UP, move_up);
+  Self.RegisterAction(SDLK_DOWN, move_down);
+  Self.RegisterAction(SDLK_LEFT, move_left);
+  Self.RegisterAction(SDLK_RIGHT, move_right);
 end;
 
 destructor TSceneMap.Destroy;
 begin
-  ATextBox.Free;
+  FTextBox.Free;
 
   inherited;
 end;
@@ -79,7 +100,9 @@ procedure TSceneMap.SceneUpdate(dt: real);
 begin
 
   inherited;
-  ATextBox.Text := Format('%4d', [Trunc(dt * 1000)]);
+  FTextBox.Text := Format('%4d', [Trunc(dt * 1000)]);
+  InputSystem;
+  MovementSystem(dt);
   AnimationSystem(dt);
 
 end;
@@ -95,9 +118,9 @@ begin
   if itemTexture <> nil then
     SDL_RenderCopy(FRenderer, itemTexture, nil, nil);
   }
-  ATextBox.DrawPanel(FRenderer);
+  FTextBox.DrawPanel(FRenderer);
 
-  ATextBox.Draw(FRenderer);
+  FTextBox.Draw(FRenderer);
 
   Self.RenderSystem;
   SDL_RenderPresent(FRenderer);
@@ -188,6 +211,61 @@ begin
 
     end;
   end;
+end;
+
+procedure TSceneMap.DoAction(ACode: integer; AAct: EActionType);
+var
+  tmpAct: EActionName;
+begin
+  WriteLn('Do Action');
+  if FActionMap.TryGetValue(ACode, tmpAct) then
+  begin
+    if AAct = EActionType.action_start then
+    begin
+      case tmpAct of
+        move_down: FPlayer.input.down := True;
+        move_up: FPlayer.input.up := True;
+        move_left: FPlayer.input.left := True;
+        move_right: FPlayer.input.right := True;
+      end;
+    end
+    else if AAct = EActionType.action_stop then
+    begin
+
+      case tmpAct of
+        move_down: FPlayer.input.down := False;
+        move_up: Fplayer.input.up := False;
+        move_left: FPlayer.input.left := False;
+        move_right: FPlayer.input.right := False;
+      end;
+    end;
+
+  end;
+
+end;
+
+procedure TSceneMap.InputSystem;
+begin
+  FPlayer.movement.X := 0;
+  FPlayer.movement.Y := 0;
+  if FPlayer.input.up then
+    FPlayer.movement.Y := FPlayer.movement.Y - 100;
+  if FPlayer.input.down then
+    FPlayer.movement.Y := FPlayer.movement.Y + 100;
+  if Fplayer.input.left then
+    FPlayer.movement.X := FPlayer.movement.X - 100;
+  if FPlayer.input.right then
+    FPlayer.movement.X := FPlayer.movement.X + 100;
+
+end;
+
+procedure TSceneMap.MovementSystem(dt: real);
+begin
+  FPlayer.position.PX := FPlayer.position.X;
+  FPlayer.position.PY := FPlayer.position.Y;
+
+  FPlayer.position.X := FPlayer.position.X + Round(FPlayer.movement.X * dt);
+  FPlayer.position.Y := FPlayer.position.Y + Round(FPlayer.movement.Y * dt);
 end;
 
 end.
