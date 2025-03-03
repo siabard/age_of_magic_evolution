@@ -73,6 +73,21 @@ type
     property Y: integer read DY write DY;
   end;
 
+  TInputComponent = class(TComponent)
+  public
+    FLeft: boolean;
+    FRight: boolean;
+    FUp: boolean;
+    FDown: boolean;
+    constructor Create(cid: string);
+    destructor Destroy; override;
+    property left: boolean read FLeft write FLeft;
+    property right: boolean read FRight write FRight;
+    property up: boolean read FUp write FUp;
+    property down: boolean read FDown write FDown;
+
+  end;
+
 implementation
 
 constructor TComponent.Create(cid: string);
@@ -152,5 +167,19 @@ begin
   inherited;
 end;
 
+
+constructor TInputComponent.Create(cid: string);
+begin
+  inherited;
+  FLeft := False;
+  FRight := False;
+  FUp := False;
+  FDown := False;
+end;
+
+destructor TInputComponent.Destroy;
+begin
+  inherited;
+end;
 
 end.

@@ -13,6 +13,8 @@ type
   private
     FPosition: TPositionComponent;
     FAnimation: TAnimationComponent;
+    FInput: TInputComponent;
+    FMovement: TMovementComponent;
     FIsAlive: boolean;
   public
     constructor Create;
@@ -20,6 +22,8 @@ type
     property position: TPositionComponent read FPosition write FPosition;
     property animation: TAnimationComponent read FAnimation write FAnimation;
     property IsLive: boolean read FIsAlive write FIsAlive;
+    property input: TInputComponent read FInput write FInput;
+    property movement: TMovementComponent read FMovement write FMovement;
   end;
 
 
@@ -39,7 +43,7 @@ begin
     FreeAndNil(FPosition);
   end;
 
-  If Assigned(FAnimation) then
+  if Assigned(FAnimation) then
   begin
     LogDebug('Remove Animation Component');
     FreeAndNil(FAnimation);

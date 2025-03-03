@@ -5,34 +5,35 @@ unit action;
 interface
 
 uses
-  Classes, SysUtils;
+  Classes, SysUtils, game_types;
 
 type
-  TCAction = class
+  TAction = class
   private
     FName: string;
     FAct: string;
-    FPos: Variant;
-    FSize: Variant;
-    FMsg: Variant;
+    FPos: RPos;
+    FSize: RSize;
+    FMsg: string;
   public
-    constructor Create(AName, AAct: string; APos: Variant = Null);
+    constructor Create(AName, AAct: string; APos: RPos);
     property Name: string read FName write FName;
     property Act: string read FAct write FAct;
-    property Pos: Variant read FPos write FPos;
-    property Size: Variant read FSize write FSize;
-    property Msg: Variant read FMsg write FMsg;
+    property Pos: RPos read FPos write FPos;
+    property Size: RSize read FSize write FSize;
+    property Msg: string read FMsg write FMsg;
   end;
 
 implementation
 
-constructor TCAction.Create(AName, AAct: string; APos: Variant);
+constructor TAction.Create(AName, AAct: string; APos: RPos);
 begin
   FName := AName;
   FAct := AAct;
   FPos := APos;
-  FSize := Null;
-  FMsg := Null;
+  FSize.RW := 0;
+  FSize.RH := 0;
+  FMsg := '';
 end;
 
 end.
