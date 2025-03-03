@@ -135,15 +135,15 @@
         <EditorIndex Value="-1"/>
         <TopLine Value="40"/>
         <CursorPos X="53" Y="55"/>
-        <UsageCount Value="100"/>
+        <UsageCount Value="96"/>
       </Unit>
       <Unit>
         <Filename Value="scene_map.pas"/>
         <IsPartOfProject Value="True"/>
         <IsVisibleTab Value="True"/>
         <EditorIndex Value="12"/>
-        <TopLine Value="242"/>
-        <CursorPos X="52" Y="256"/>
+        <TopLine Value="30"/>
+        <CursorPos X="40" Y="49"/>
         <UsageCount Value="213"/>
         <Loaded Value="True"/>
       </Unit>
