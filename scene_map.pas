@@ -217,7 +217,6 @@ procedure TSceneMap.DoAction(ACode: integer; AAct: EActionType);
 var
   tmpAct: EActionName;
 begin
-  WriteLn('Do Action');
   if FActionMap.TryGetValue(ACode, tmpAct) then
   begin
     if AAct = EActionType.action_start then

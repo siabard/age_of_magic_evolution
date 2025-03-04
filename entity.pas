@@ -48,6 +48,16 @@ begin
     LogDebug('Remove Animation Component');
     FreeAndNil(FAnimation);
   end;
+
+  if Assigned(FInput) then
+  begin
+    FInput.Free;
+  end;
+
+  if Assigned(FMovement) then
+  begin
+    FMovement.Free;
+  end;
 end;
 
 
