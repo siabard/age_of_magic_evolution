@@ -319,7 +319,7 @@ begin
   for  I := 0 to Entities.Count do
   begin
     Collider := Entities[I];
-    if FPlayer.getId <> Collider.getId then
+    if FPlayer.id <> Collider.id then
     begin
       if Assigned(Collider.collide) and Assigned(collider.position) then
       begin

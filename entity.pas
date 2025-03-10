@@ -17,7 +17,7 @@ type
     FMovement: TMovementComponent;
     FIsAlive: boolean;
     FCollide: TCollideComponent;
-    class var ENTITY_ID: Integer;
+    nid: Integer;
 
   public
     constructor Create;
@@ -28,9 +28,10 @@ type
     property input: TInputComponent read FInput write FInput;
     property movement: TMovementComponent read FMovement write FMovement;
     property collide: TCollideComponent read FCollide write FCollide;
-    function getId(): Integer;
+    property id: Integer read nid;
     function GetBoundigRect: RRect;
     function GetPrevBoundingRect: RRect;
+    function setNid(AId: Integer): Integer;
   end;
 
 
@@ -42,8 +43,6 @@ uses  physics_util;
 constructor TEntity.Create;
 begin
   FIsAlive := True;
-  Inc(ENTITY_ID);
-  WriteLn(Format('Entity: %d', [ENTITY_ID]));
 end;
 
 destructor TEntity.Destroy;
@@ -87,9 +86,10 @@ begin
   Result.RH := Self.collide.BoundBox.RH;
 end;
 
-function TEntity.getid(): Integer;
+function TEntity.setNid(AId: Integer): Integer;
 begin
-  Result := ENTITY_ID;
+  Self.nid := AId;
+  Result := Self.nid;
 end;
 
 end.

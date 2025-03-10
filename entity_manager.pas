@@ -12,6 +12,7 @@ type
   private
     FEntities: specialize TList<TEntity>;
     FAddedEntities: specialize TList<TEntity>;
+    entity_id: integer;
   public
     constructor Create;
     destructor Destroy; override;
@@ -26,6 +27,7 @@ constructor TEntityManager.Create;
 begin
   FEntities := specialize TList<TEntity>.Create;
   FAddedEntities := specialize TList<TEntity>.Create;
+  entity_id := 0;
 end;
 
 destructor TEntityManager.Destroy;
@@ -49,9 +51,12 @@ function TEntityManager.AddEntity(): TEntity;
 var
   AEntity: TEntity;
 begin
+  Inc(entity_id);
   LogDebug('TEntityManager.AddEntity');
   AEntity := TEntity.Create;
+  AEntity.setNid(entity_id);
   FAddedEntities.Add(AEntity);
+
   Result := AEntity;
 end;
 
