@@ -6,7 +6,11 @@ interface
 
 
 uses
-  Classes, SysUtils, game_types;
+  Classes, SysUtils, entity, game_types;
+
+type
+  EDirection = (dir_none, dir_left, dir_right, dir_up, dir_down);
+  ECardinal = (card_none, card_west, card_east, card_north, card_south);
 
 function RectCenter(ARect: RRect): RVec2;
 function RectContainsX(ARect: RRect; BRect: RRect): boolean;
@@ -28,6 +32,18 @@ function BoundRect(pos: RVec2; w: integer; h: integer): RRect;
 
 { 두 RRect2 가 겹친 범위를 결정한다. }
 function CameraClippedRect(ARect: RRect; BRect: RRect): RRect;
+
+{ x, y 만큼 이동한 Rect }
+function MoveRect(ARect: RRect; AVec2: RVec2): RRect;
+
+{ 두 entity 간의 겹처진 영역 }
+function EntityOverlapAmount(AEntity: TEntity; BEntity: TEntity): RVec2;
+
+{ 두 entity가 이전 프레임에서 겹쳐진 영역 }
+function EntityPrevOverlapAmount(AEntity: TEntity; BEntity: TEntity): RVec2;
+
+{ 두 entit가 겹쳤을 때 그 방향 }
+function CollideDirection(AEntity: TEntity; BEntity: TEntity): EDirection;
 
 implementation
 
@@ -226,6 +242,83 @@ begin
     Result.RW := Overlapped.RX;
     Result.RY := Overlapped.RY;
   end;
+end;
+
+function MoveRect(ARect: RRect; AVec2: RVec2): RRect;
+begin
+  Result.RX := ARect.RX + AVec2.RX;
+  Result.RY := ARect.RY + AVec2.RY;
+  Result.RW := ARect.RW;
+  Result.RH := ARect.RH;
+end;
+
+function EntityOverlapAmount(AEntity: TEntity; BEntity: TEntity): RVec2;
+var
+  R1: RRect;
+  R2: RRect;
+begin
+  R1 := AEntity.GetBoundigRect;
+  R2 := BEntity.GetBoundigRect;
+
+  Result := OverlapAmount(R1, R2);
+
+end;
+
+
+function EntityPrevOverlapAmount(AEntity: TEntity; BEntity: TEntity): RVec2;
+var
+  R1: RRect;
+  R2: RRect;
+begin
+  R1 := AEntity.GetPrevBoundingRect;
+  R2 := BEntity.GetPrevBoundingRect;
+
+  Result := OverlapAmount(R1, R2);
+
+end;
+
+function CollideDirection(AEntity: TEntity; BEntity: TEntity): EDirection;
+var
+  overlap: RVec2;
+  prevOverlap: RVec2;
+  c1: RVec2;
+  c2: RVec2;
+  olx: integer;
+  oly: integer;
+  polx: integer;
+  poly: integer;
+begin
+
+  overlap := EntityOverlapAmount(AEntity, BEntity);
+  prevOverlap := EntityPrevOverlapAmount(AEntity, BEntity);
+  c1 := RectCenter(AEntity.GetBoundigRect);
+  c2 := RectCenter(BEntity.GetBoundigRect);
+  olx := overlap.RX;
+  oly := overlap.RY;
+  polx := prevOverlap.RX;
+  poly := prevOverlap.RY;
+
+
+
+  if (olx >= 0) and (oly <= 0) then
+  begin
+    if (polx > 0) and (poly <= 0) then
+    begin
+      if (c1.RY > c2.RY) then
+        Result := dir_up
+      else
+        Result := dir_down;
+    end
+    else if (polx <= 0) and (poly > 0) then
+    begin
+      if c1.RX > c2.RX then
+        Result := dir_left
+      else
+        Result := dir_right;
+    end;
+  end
+  else
+    Result := dir_none;
 end;
 
 end.

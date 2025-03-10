@@ -24,6 +24,7 @@ type
     procedure DoAction(ACode: integer; AAct: EActionType); override;
     procedure InputSystem;
     procedure MovementSystem(dt: real);
+    procedure CollisionSystem;
   end;
 
 implementation
@@ -32,6 +33,7 @@ uses
   component,
   animation,
   game_types,
+  physics_util,
   Generics.Collections;
 
 constructor TSceneMap.Create(AM: TAssetManager; AR: PSDL_Renderer; AK: TKeyInput);
@@ -42,6 +44,8 @@ var
   APosComp: TPositionComponent;
   AInput: TInputComponent;
   AMovement: TMovementComponent;
+  ACollider: TCollideComponent;
+  DefaultCollider: RRect;
 begin
   inherited;
 
@@ -53,7 +57,7 @@ begin
   FTextBox.korFontTexture := FAssetManager.GetTexture('hangul');
   FTextBox.engFontTexture := FAssetManager.GetTexture('ascii');
 
-  // 신규 엔터티 생성해보기
+  // 신규 엔터티 생성해보기 (Player)
   AEntity := FEntityManager.AddEntity();
   FPlayer := AEntity;
   // animation sword 가짐
@@ -74,13 +78,45 @@ begin
   AMovement.X := 0;
   AMovement.Y := 0;
 
+
+  ACollider := TCollideComponent.Create('sword bound');
+  with DefaultCollider do
+  begin
+    RX := 0;
+    RY := 0;
+    RW := 16;
+    RH := 16;
+  end;
+
+
+  ACollider.BoundBox := DefaultCollider;
+
   AEntity.input := AInput;
 
   AEntity.movement := AMovement;
   AEntity.position := APosComp;
   AEntity.animation := AAnimComp;
+  AEntity.collide := ACollider;
 
+  // 신규 엔터티 생성해보기 (Collider)
+  AEntity := FEntityManager.AddEntity();
+  AAnimation := FAssetManager.GetAnimation('armor');
+  AAnimComp := TAnimationComponent.Create('armor anim');
+  AAnimComp.SetAnimation('armor', AAnimation);
+  AAnimComp.CurrentAnimation := 'armor';
+  AAnimComp.Duration := 300;
+  APosComp := TPositionComponent.Create('Armor pos');
+  APosComp.X := 240;
+  APosComp.Y := 350;
+  APosComp.PX := 240;
+  APosComp.PY := 350;
 
+  ACollider := TCollideComponent.Create('sword bound');
+  ACollider.BoundBox := DefaultCollider;
+
+  AEntity.animation := AAnimComp;
+  AEntity.position := APosComp;
+  AEntity.collide := ACollider;
 
   { Action 설정 }
   Self.RegisterAction(SDLK_UP, move_up);
@@ -104,6 +140,7 @@ begin
   InputSystem;
   MovementSystem(dt);
   AnimationSystem(dt);
+  //CollisionSystem;
 
 end;
 
@@ -265,6 +302,44 @@ begin
 
   FPlayer.position.X := FPlayer.position.X + Round(FPlayer.movement.X * dt);
   FPlayer.position.Y := FPlayer.position.Y + Round(FPlayer.movement.Y * dt);
+end;
+
+procedure TSceneMap.CollisionSystem;
+var
+  Collider: TEntity;
+  Position: TPositionComponent;
+  I: integer;
+  Entities: specialize TList<TEntity>;
+  CollDir: EDirection;
+  CollAmount: RVec2;
+begin
+  Position := FPlayer.position;
+  Entities := FEntityManager.GetEntities;
+
+  for  I := 0 to Entities.Count do
+  begin
+    Collider := Entities[I];
+    if FPlayer.getId <> Collider.getId then
+    begin
+      if Assigned(Collider.collide) and Assigned(collider.position) then
+      begin
+        Position := FPlayer.position;
+
+        CollDir := CollideDirection(FPlayer, Collider);
+        CollAmount := OverlapAmount(FPlayer.GetBoundigRect, Collider.GetBoundigRect);
+
+        if (CollAmount.Rx > 0) and (CollAmount.RY > 0) then
+        begin
+          case CollDir of
+            EDirection.dir_up: FPlayer.position.Y := FPlayer.position.Y + CollAmount.RY;
+            EDirection.dir_down: FPlayer.position.Y := FPlayer.position.Y - CollAmount.RY;
+            EDirection.dir_left: FPlayer.position.X := FPlayer.position.X + CollAmount.RX;
+            EDirection.dir_right: FPlayer.position.X := FPlayer.position.X - CollAmount.RX;
+          end;
+        end;
+      end;
+    end;
+  end;
 end;
 
 end.

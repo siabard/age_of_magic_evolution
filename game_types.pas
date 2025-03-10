@@ -32,6 +32,8 @@ type
 
 function RectToSdl2Rect(ARect: RRect): TSDL_Rect;
 
+function RectCenter(ARect: RRect): RVec2;
+
 implementation
 
 function RectToSdl2Rect(ARect: RRect): TSDL_Rect;
@@ -41,5 +43,12 @@ begin
   Result.w := ARect.RW;
   Result.h := ARect.RH;
 end;
+
+function RectCenter(ARect: RRect): RVec2;
+begin
+  Result.RX := ARect.RX + (ARect.RW div 2);
+  Result.RY := ARect.RX + (ARect.RH div 2);
+end;
+
 
 end.
