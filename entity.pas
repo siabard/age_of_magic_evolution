@@ -68,6 +68,11 @@ begin
   begin
     FMovement.Free;
   end;
+
+  if Assigned(FCollide) Then
+  begin
+    FreeAndNil(FCollide);
+  end;
 end;
 
 function TEntity.GetBoundigRect: RRect;
