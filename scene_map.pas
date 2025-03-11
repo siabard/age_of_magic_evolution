@@ -140,8 +140,7 @@ begin
   InputSystem;
   MovementSystem(dt);
   AnimationSystem(dt);
-  //CollisionSystem;
-
+  CollisionSystem;
 end;
 
 procedure TSceneMap.SceneRender();
@@ -316,7 +315,7 @@ begin
   Position := FPlayer.position;
   Entities := FEntityManager.GetEntities;
 
-  for  I := 0 to Entities.Count do
+  for  I := 0 to Entities.Count - 1 do
   begin
     Collider := Entities[I];
     if FPlayer.id <> Collider.id then
@@ -331,10 +330,10 @@ begin
         if (CollAmount.Rx > 0) and (CollAmount.RY > 0) then
         begin
           case CollDir of
-            EDirection.dir_up: FPlayer.position.Y := FPlayer.position.Y + CollAmount.RY;
-            EDirection.dir_down: FPlayer.position.Y := FPlayer.position.Y - CollAmount.RY;
-            EDirection.dir_left: FPlayer.position.X := FPlayer.position.X + CollAmount.RX;
-            EDirection.dir_right: FPlayer.position.X := FPlayer.position.X - CollAmount.RX;
+            EDirection.dir_up: Position.Y := Position.Y + CollAmount.RY;
+            EDirection.dir_down: Position.Y := Position.Y - CollAmount.RY;
+            EDirection.dir_left: Position.X := Position.X + CollAmount.RX;
+            EDirection.dir_right: Position.X := Position.X - CollAmount.RX;
           end;
         end;
       end;

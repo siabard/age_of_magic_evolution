@@ -105,7 +105,7 @@ var
   DeltaY: integer;
 begin
   DeltaX := Abs(V1.RX - V2.RX);
-  DeltaY := Abs(V1.RY - V1.RY);
+  DeltaY := Abs(V1.RY - V2.RY);
 
   Result.RX := DeltaX;
   Result.RY := DeltaY;
@@ -158,6 +158,7 @@ begin
   C1 := RectCenter(R1);
   C2 := RectCenter(R2);
   Delta := Vec2Delta(C1, C2);
+
   OX := Trunc(R1.RW / 2) + Trunc(R2.RW / 2) - Delta.RX;
   OY := Trunc(R1.RH / 2) + Trunc(R2.RH / 2) - Delta.RY;
 
@@ -166,14 +167,15 @@ begin
 
   if RectContainsX(R1, R2) then
     Result.RX := R1.RW
-  else
+  else if RectContains(R2, R1) then
     Result.RX := R2.RW;
 
   if RectContainsY(R1, R2) then
     Result.RY := R1.RH
-  else
+  else if RectContains(R2, R1) then
     Result.RY := R2.RH;
 
+  //DebugVec2('Result :', Result);
 end;
 
 function AABBCollision(R1: RRect; R2: RRect): boolean;
@@ -262,6 +264,10 @@ begin
 
   Result := OverlapAmount(R1, R2);
 
+  //WriteLn(Format('R1: %d %d %d %d', [R1.RX, R1.RY, R1.RW, R1.RH]));
+  //WriteLn(Format('R2: %d %d %d %d', [R2.RX, R2.RY, R2.RW, R2.RH]));
+
+  //WriteLn(Format('Overlap: %d %d', [Result.RX, Result.RY]));
 end;
 
 
@@ -288,7 +294,6 @@ var
   polx: integer;
   poly: integer;
 begin
-
   overlap := EntityOverlapAmount(AEntity, BEntity);
   prevOverlap := EntityPrevOverlapAmount(AEntity, BEntity);
   c1 := RectCenter(AEntity.GetBoundigRect);
@@ -298,9 +303,10 @@ begin
   polx := prevOverlap.RX;
   poly := prevOverlap.RY;
 
+  Result := dir_none;
 
-
-  if (olx >= 0) and (oly <= 0) then
+  //WriteLn(Format('ox: %3d oy: %3d, pox: %3d, poy: %3d', [olx, oly, polx, poly]));
+  if (olx > 0) and (oly > 0) then
   begin
     if (polx > 0) and (poly <= 0) then
     begin
@@ -316,9 +322,7 @@ begin
       else
         Result := dir_right;
     end;
-  end
-  else
-    Result := dir_none;
+  end;
 end;
 
 end.

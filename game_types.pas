@@ -34,6 +34,10 @@ function RectToSdl2Rect(ARect: RRect): TSDL_Rect;
 
 function RectCenter(ARect: RRect): RVec2;
 
+procedure DebugRect(Tag: string; ARect: RRect);
+
+procedure DebugVec2(Tag: string; AVec2: RVec2);
+
 implementation
 
 function RectToSdl2Rect(ARect: RRect): TSDL_Rect;
@@ -50,5 +54,14 @@ begin
   Result.RY := ARect.RX + (ARect.RH div 2);
 end;
 
+procedure DebugRect(Tag: string; ARect: RRect);
+begin
+  WriteLn(Format('%s: %d %d %d %d', [Tag, ARect.RX, ARect.RY, ARect.RW, ARect.RH]));
+end;
+
+procedure DebugVec2(Tag: string; AVec2: RVec2);
+begin
+  WriteLn(Format('%s: %d %d', [Tag, AVec2.RX, AVec2.RY]));
+end;
 
 end.
