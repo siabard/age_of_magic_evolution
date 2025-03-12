@@ -5,7 +5,7 @@ unit component;
 interface
 
 uses
-  Classes, SysUtils, LogUtil, Generics.Collections, animation;
+  Classes, SysUtils, LogUtil, Generics.Collections, animation, game_types;
 
 type
 
@@ -74,11 +74,12 @@ type
   end;
 
   TInputComponent = class(TComponent)
-  public
+  private
     FLeft: boolean;
     FRight: boolean;
     FUp: boolean;
     FDown: boolean;
+  public
     constructor Create(cid: string);
     destructor Destroy; override;
     property left: boolean read FLeft write FLeft;
@@ -86,6 +87,15 @@ type
     property up: boolean read FUp write FUp;
     property down: boolean read FDown write FDown;
 
+  end;
+
+  TCollideComponent = class(TComponent)
+  private
+    FBoundBox: RRect;
+  public
+    constructor Create(cid: string);
+    destructor Destroy; override;
+    property BoundBox: RRect read FBoundBox write FBoundBox;
   end;
 
 implementation
@@ -178,6 +188,16 @@ begin
 end;
 
 destructor TInputComponent.Destroy;
+begin
+  inherited;
+end;
+
+constructor TCollideComponent.Create(cid: string);
+begin
+  inherited;
+end;
+
+destructor TCollideComponent.Destroy;
 begin
   inherited;
 end;
