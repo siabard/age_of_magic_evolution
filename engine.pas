@@ -32,6 +32,8 @@ type
 
 implementation
 
+uses StrUtils;
+
 constructor TEngine.Create;
 begin
   {---------------------------------------------------------------------------}
@@ -133,6 +135,9 @@ begin
       begin
         ReadLn(configFile, config);
 
+        If IsEmptyStr(config, []) then
+           continue;
+
         // Config를 Split 한다.
         Fields.DelimitedText := config;
 
@@ -209,6 +214,7 @@ begin
 
     { Scene 생성 처리 }
     AScene := TSceneMap.Create(AAssetManager, ARenderer, AKeyInput);
+    AScene.SceneInit('resources/map_zelda.txt');
 
     { Scene 의 리소스 생성 (초기 엔터티등) }
     AScenes.Add(AScene);

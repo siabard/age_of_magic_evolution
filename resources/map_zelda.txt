@@ -12,12 +12,13 @@ set entity player animation armor
 
 # set entity [entity_id] current_animation [animation_id]
 set entity player current_animation sword
-
+# set entity [entity_id] input
+set entity player input
 
 set entity block movement 0 0
-set entity block position 20 20
+set entity block position 240 240
 set entity block animation armor
-
+set entity block current_animation armor
 
 # collision
 set entity player collision 0 0 16 16

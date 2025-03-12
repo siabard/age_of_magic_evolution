@@ -41,7 +41,7 @@ type
 implementation
 
 uses
-  entity, component, LogUtil, animation;
+  entity, component, LogUtil, animation, StrUtils;
 
 constructor TScene.Create(AM: TAssetManager; AR: PSDL_Renderer; AK: TKeyInput);
 begin
@@ -87,14 +87,20 @@ begin
       while not EOF(configFile) do
       begin
         ReadLn(configFile, config);
+        WriteLn('Start Config', config);
+
+        if IsEmptyStr(config, []) then
+          continue;
+
 
         // Config를 Split 한다.
         Fields.DelimitedText := config;
 
         case Fields[0] of
           'entity': begin
-            AEntity := EntityManager.AddEntity;
+            AEntity := FEntityManager.AddEntity;
             AEntity.Tag := Fields[1];
+            FEntityManager.Update;
           end;
           'set': begin
             { set entity [entity_id] movement x y }
@@ -113,6 +119,7 @@ begin
             }
             case Fields[1] of
               'entity': begin
+                WriteLn('entity setup');
                 AEntity := EntityManager.GetEntity(Fields[2]);
                 case Fields[3] of
                   'movement': begin
@@ -161,6 +168,7 @@ begin
                       ACompAnim := AEntity.animation;
 
                     ACompAnim.SetAnimation(Fields[4], AAnimation);
+                    ACompAnim.Duration := 300;
                   end;
                   'current_animation': begin
                     if AEntity.animation <> nil then
@@ -188,6 +196,14 @@ begin
                       RY := ValY;
                       RW := ValW;
                       RH := ValH;
+                    end;
+                  end;
+                  'input': begin
+                    if AEntity.input = nil then
+                    begin
+                      ACompInput :=
+                        TInputComponent.Create(Format('%s_%s', ['input', Fields[2]]));
+                      AEntity.input := ACompInput;
                     end;
                   end;
                 end;

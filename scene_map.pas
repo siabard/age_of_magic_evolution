@@ -57,6 +57,7 @@ begin
   FTextBox.korFontTexture := FAssetManager.GetTexture('hangul');
   FTextBox.engFontTexture := FAssetManager.GetTexture('ascii');
 
+  {
   // 신규 엔터티 생성해보기 (Player)
   AEntity := FEntityManager.AddEntity();
   FPlayer := AEntity;
@@ -117,6 +118,7 @@ begin
   AEntity.animation := AAnimComp;
   AEntity.position := APosComp;
   AEntity.collide := ACollider;
+  }
 
   { Action 설정 }
   Self.RegisterAction(SDLK_UP, move_up);
@@ -134,13 +136,15 @@ end;
 
 procedure TSceneMap.SceneUpdate(dt: real);
 begin
-
   inherited;
+
   FTextBox.Text := Format('%4d', [Trunc(dt * 1000)]);
+
   InputSystem;
   MovementSystem(dt);
   AnimationSystem(dt);
   CollisionSystem;
+
 end;
 
 procedure TSceneMap.SceneRender();
@@ -252,26 +256,39 @@ end;
 procedure TSceneMap.DoAction(ACode: integer; AAct: EActionType);
 var
   tmpAct: EActionName;
+  AEntity: TEntity;
+  AEntities: specialize TList<TEntity>;
+  I: integer;
 begin
+  AEntities := FEntityManager.GetEntities;
   if FActionMap.TryGetValue(ACode, tmpAct) then
   begin
     if AAct = EActionType.action_start then
     begin
-      case tmpAct of
-        move_down: FPlayer.input.down := True;
-        move_up: FPlayer.input.up := True;
-        move_left: FPlayer.input.left := True;
-        move_right: FPlayer.input.right := True;
+      for I := 0 to AEntities.Count - 1 do
+      begin
+        if AEntities[I].input <> nil then
+          case tmpAct of
+            move_down: AEntities[I].input.down := True;
+            move_up: AEntities[I].input.up := True;
+            move_left: AEntities[I].input.left := True;
+            move_right: AEntities[I].input.right := True;
+          end;
+
       end;
     end
     else if AAct = EActionType.action_stop then
     begin
+      for I := 0 to AEntities.Count - 1 do
+      begin
+        if AEntities[I].input <> nil then
+          case tmpAct of
+            move_down: AEntities[I].input.down := False;
+            move_up: AEntities[I].input.up := False;
+            move_left: AEntities[I].input.left := False;
+            move_right: AEntities[I].input.right := False;
+          end;
 
-      case tmpAct of
-        move_down: FPlayer.input.down := False;
-        move_up: Fplayer.input.up := False;
-        move_left: FPlayer.input.left := False;
-        move_right: FPlayer.input.right := False;
       end;
     end;
 
@@ -280,64 +297,101 @@ begin
 end;
 
 procedure TSceneMap.InputSystem;
+var
+  I: integer;
+  AEntity: TEntity;
+  AEntities: specialize TList<TEntity>;
 begin
-  FPlayer.movement.X := 0;
-  FPlayer.movement.Y := 0;
-  if FPlayer.input.up then
-    FPlayer.movement.Y := FPlayer.movement.Y - 100;
-  if FPlayer.input.down then
-    FPlayer.movement.Y := FPlayer.movement.Y + 100;
-  if Fplayer.input.left then
-    FPlayer.movement.X := FPlayer.movement.X - 100;
-  if FPlayer.input.right then
-    FPlayer.movement.X := FPlayer.movement.X + 100;
+  AEntities := FEntityManager.GetEntities;
+
+  for I := 0 to AEntities.Count - 1 do
+  begin
+    AEntity := AEntities[I];
+    if (AEntity.movement <> nil) and (AEntity.input <> nil) then
+    begin
+      AEntity.movement.X := 0;
+      AEntity.movement.Y := 0;
+      if AEntity.input.up then
+        AEntity.movement.Y := AEntity.movement.Y - 100;
+      if AEntity.input.down then
+        AEntity.movement.Y := AEntity.movement.Y + 100;
+      if AEntity.input.left then
+        AEntity.movement.X := AEntity.movement.X - 100;
+      if AEntity.input.right then
+        AEntity.movement.X := AEntity.movement.X + 100;
+    end;
+  end;
 
 end;
 
 procedure TSceneMap.MovementSystem(dt: real);
+var
+  I: integer;
+  AEntity: TEntity;
+  AEntities: specialize TList<TEntity>;
 begin
-  FPlayer.position.PX := FPlayer.position.X;
-  FPlayer.position.PY := FPlayer.position.Y;
+  AEntities := FEntityManager.GetEntities;
 
-  FPlayer.position.X := FPlayer.position.X + Round(FPlayer.movement.X * dt);
-  FPlayer.position.Y := FPlayer.position.Y + Round(FPlayer.movement.Y * dt);
+  for I := 0 to AEntities.Count - 1 do
+  begin
+    AEntity := AEntities[I];
+    if (AEntity.position <> nil) and (AEntity.movement <> nil) then
+    begin
+      AEntity.position.PX := AEntity.position.X;
+      AEntity.position.PY := AEntity.position.Y;
+
+      AEntity.position.X := AEntity.position.X + Round(AEntity.movement.X * dt);
+      AEntity.position.Y := AEntity.position.Y + Round(AEntity.movement.Y * dt);
+    end;
+  end;
+
 end;
 
 procedure TSceneMap.CollisionSystem;
 var
   Collider: TEntity;
+  Player: TEntity;
   Position: TPositionComponent;
   I: integer;
+  J: integer;
   Entities: specialize TList<TEntity>;
   CollDir: EDirection;
   CollAmount: RVec2;
 begin
-  Position := FPlayer.position;
-  Entities := FEntityManager.GetEntities;
 
+  Entities := FEntityManager.GetEntities;
   for  I := 0 to Entities.Count - 1 do
   begin
-    Collider := Entities[I];
-    if FPlayer.id <> Collider.id then
-    begin
-      if Assigned(Collider.collide) and Assigned(collider.position) then
+    Player := Entities[I];
+
+    if (Player.collide = nil) or (player.position = nil) then
+      continue;
+    Position := Player.position;
+    for J := I + 1 to Entities.Count - 1 do
+
+      if I <> J then
       begin
-        Position := FPlayer.position;
-
-        CollDir := CollideDirection(FPlayer, Collider);
-        CollAmount := OverlapAmount(FPlayer.GetBoundigRect, Collider.GetBoundigRect);
-
-        if (CollAmount.Rx > 0) and (CollAmount.RY > 0) then
+        Collider := Entities[J];
+        if (Collider.collide = nil) or (Collider.position = nil) then
+          continue;
+        if Player.id <> Collider.id then
         begin
-          case CollDir of
-            EDirection.dir_up: Position.Y := Position.Y + CollAmount.RY;
-            EDirection.dir_down: Position.Y := Position.Y - CollAmount.RY;
-            EDirection.dir_left: Position.X := Position.X + CollAmount.RX;
-            EDirection.dir_right: Position.X := Position.X - CollAmount.RX;
+          CollDir := CollideDirection(Player, Collider);
+          CollAmount := OverlapAmount(Player.GetBoundigRect, Collider.GetBoundigRect);
+
+          if (CollAmount.Rx > 0) and (CollAmount.RY > 0) then
+          begin
+            case CollDir of
+              EDirection.dir_up: Position.Y := Position.Y + CollAmount.RY;
+              EDirection.dir_down: Position.Y := Position.Y - CollAmount.RY;
+              EDirection.dir_left: Position.X := Position.X + CollAmount.RX;
+              EDirection.dir_right: Position.X := Position.X - CollAmount.RX;
+            end;
           end;
+
         end;
       end;
-    end;
+
   end;
 end;
 
