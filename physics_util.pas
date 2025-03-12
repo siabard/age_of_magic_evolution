@@ -177,6 +177,8 @@ end;
 
 { ARect 에서 BRest에 노출을 Mapping 한다고 할 때, 출력할 수 있는
   ARect 의 범위를 구한다.
+  ARect는 Entity의 Animation 이 노출될 영역이며,
+  BRect는 Camera의 영역이다.
 }
 function CameraClippedRect(ARect: RRect; BRect: RRect): RRect;
 var
