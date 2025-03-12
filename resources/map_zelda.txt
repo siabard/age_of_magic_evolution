@@ -17,3 +17,8 @@ set entity player current_animation sword
 set entity block movement 0 0
 set entity block position 20 20
 set entity block animation armor
+
+
+# collision
+set entity player collision 0 0 16 16
+set entity block collision 0 0 16 16

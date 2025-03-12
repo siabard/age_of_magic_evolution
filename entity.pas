@@ -18,6 +18,7 @@ type
     FIsAlive: boolean;
     FCollide: TCollideComponent;
     nid: Integer;
+    FTag: String;
 
   public
     constructor Create;
@@ -29,6 +30,7 @@ type
     property movement: TMovementComponent read FMovement write FMovement;
     property collide: TCollideComponent read FCollide write FCollide;
     property id: Integer read nid;
+    property tag: String read FTag write FTag;
     function GetBoundigRect: RRect;
     function GetPrevBoundingRect: RRect;
     function setNid(AId: Integer): Integer;

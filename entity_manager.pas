@@ -19,6 +19,7 @@ type
     function AddEntity(): TEntity;
     procedure Update();
     function GetEntities: specialize TList<TEntity>;
+    function GetEntity(ATag: string): TEntity;
   end;
 
 implementation
@@ -97,6 +98,21 @@ end;
 function TEntityManager.GetEntities: specialize TList<TEntity>;
 begin
   Result := FEntities;
+end;
+
+function TEntityManager.GetEntity(ATag: string): TEntity;
+var
+  I: Integer;
+begin
+  Result := Nil;
+  For I := 0 TO FEntities.Count - 1 do
+  begin
+    If FEntities[I].tag = ATag Then
+    Begin
+      Result := FEntities[I];
+      break;
+    end;
+  end;
 end;
 
 end.
