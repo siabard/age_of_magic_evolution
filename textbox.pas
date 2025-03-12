@@ -131,8 +131,17 @@ begin
     begin
       if get_language(WordArray[I]) = ascii then
       begin
-        Self.DrawAsciiCharacter(renderer, Tx, Ty, WordArray[I]);
-        Tx := Tx + ASCII_FONT_WIDTH;
+        if WordArray[I] = 10 then
+        begin
+          Tx := BX + px;
+          Ty := BY + Py + ASCII_FONT_HEIGHT;
+        end
+        else
+        begin
+          Self.DrawAsciiCharacter(renderer, Tx, Ty, WordArray[I]);
+          Tx := Tx + ASCII_FONT_WIDTH;
+        end;
+
       end
       else if get_language(WordArray[I]) = korean then
       begin

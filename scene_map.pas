@@ -135,10 +135,16 @@ begin
 end;
 
 procedure TSceneMap.SceneUpdate(dt: real);
+var
+  FPS: Integer;
 begin
   inherited;
 
-  FTextBox.Text := Format('%4d', [Trunc(dt * 1000)]);
+  If dt = 0 Then
+     FPS := 0
+  Else
+    FPS := 1000 div Trunc(dt * 1000);
+  FTextBox.Text := Format('DT : %8d%sFPS: %8d', [Trunc(dt * 1000), sLineBreak, FPS]);
 
   InputSystem;
   MovementSystem(dt);
