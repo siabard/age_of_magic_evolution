@@ -136,13 +136,13 @@ end;
 
 procedure TSceneMap.SceneUpdate(dt: real);
 var
-  FPS: Integer;
+  FPS: integer;
 begin
   inherited;
 
-  If dt = 0 Then
-     FPS := 0
-  Else
+  if dt = 0 then
+    FPS := 0
+  else
     FPS := 1000 div Trunc(dt * 1000);
   FTextBox.Text := Format('DT : %8d%sFPS: %8d', [Trunc(dt * 1000), sLineBreak, FPS]);
 
@@ -262,8 +262,8 @@ end;
 procedure TSceneMap.DoAction(ACode: integer; AAct: EActionType);
 var
   tmpAct: EActionName;
-  AEntity: TEntity;
   AEntities: specialize TList<TEntity>;
+  AEntity: TEntity;
   I: integer;
 begin
   AEntities := FEntityManager.GetEntities;
@@ -273,12 +273,13 @@ begin
     begin
       for I := 0 to AEntities.Count - 1 do
       begin
-        if AEntities[I].input <> nil then
+        AEntity := AEntities[I];
+        if AEntity.input <> nil then
           case tmpAct of
-            move_down: AEntities[I].input.down := True;
-            move_up: AEntities[I].input.up := True;
-            move_left: AEntities[I].input.left := True;
-            move_right: AEntities[I].input.right := True;
+            move_down: AEntity.input.down := True;
+            move_up: AEntity.input.up := True;
+            move_left: AEntity.input.left := True;
+            move_right: AEntity.input.right := True;
           end;
 
       end;
@@ -287,12 +288,12 @@ begin
     begin
       for I := 0 to AEntities.Count - 1 do
       begin
-        if AEntities[I].input <> nil then
+        if AEntity.input <> nil then
           case tmpAct of
-            move_down: AEntities[I].input.down := False;
-            move_up: AEntities[I].input.up := False;
-            move_left: AEntities[I].input.left := False;
-            move_right: AEntities[I].input.right := False;
+            move_down: AEntity.input.down := False;
+            move_up: AEntity.input.up := False;
+            move_left: AEntity.input.left := False;
+            move_right: AEntity.input.right := False;
           end;
 
       end;

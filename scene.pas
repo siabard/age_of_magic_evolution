@@ -87,7 +87,6 @@ begin
       while not EOF(configFile) do
       begin
         ReadLn(configFile, config);
-        WriteLn('Start Config', config);
 
         if IsEmptyStr(config, []) then
           continue;
@@ -119,7 +118,6 @@ begin
             }
             case Fields[1] of
               'entity': begin
-                WriteLn('entity setup');
                 AEntity := EntityManager.GetEntity(Fields[2]);
                 case Fields[3] of
                   'movement': begin
