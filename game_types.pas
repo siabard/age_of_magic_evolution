@@ -32,6 +32,8 @@ type
 
 function RectToSdl2Rect(ARect: RRect): TSDL_Rect;
 
+function Sdl2RectToRect(ARect: TSDL_Rect): RRect;
+
 function RectCenter(ARect: RRect): RVec2;
 
 procedure DebugRect(Tag: string; ARect: RRect);
@@ -46,6 +48,14 @@ begin
   Result.y := ARect.RY;
   Result.w := ARect.RW;
   Result.h := ARect.RH;
+end;
+
+function Sdl2RectToRect(ARect: TSDL_Rect): RRect;
+begin
+  Result.RX := ARect.x;
+  Result.RY := ARect.y;
+  Result.RW := ARect.w;
+  Result.RH := ARect.h;
 end;
 
 function RectCenter(ARect: RRect): RVec2;

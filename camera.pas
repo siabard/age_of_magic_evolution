@@ -5,7 +5,7 @@ unit camera;
 interface
 
 uses
-  Classes, SysUtils, Math;
+  Classes, SysUtils, Math, game_types;
 
 type
   TDirection = (dirNone, dirUp, dirDown, dirLeft, dirRight);
@@ -19,7 +19,7 @@ type
     FW, FH: Integer;
   public
     constructor Create(AName: string; AX, AY, AW, AH: Integer);
-    function GetRect: TRect;
+    function GetRect: RRect;
     procedure Follow(PosX, PosY: Integer; VDir, HDir: TDirection);
     procedure Update(DT: Real);
     property Name: string read FName write FName;
@@ -48,12 +48,12 @@ begin
   FMaxY := 0;
 end;
 
-function TCamera.GetRect: TRect;
+function TCamera.GetRect: RRect;
 begin
-  Result.Left := FX;
-  Result.Top := FY;
-  Result.Right := FX + FW;
-  Result.Bottom := FY + FH;
+  Result.RX := FX;
+  Result.RY := FY;
+  Result.RW := FX + FW;
+  Result.RH := FY + FH;
 end;
 
 procedure TCamera.Follow(PosX, PosY: Integer; VDir, HDir: TDirection);

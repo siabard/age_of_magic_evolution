@@ -244,7 +244,7 @@ begin
       Result.RY := 0;
 
     Result.RW := Overlapped.RX;
-    Result.RY := Overlapped.RY;
+    Result.RH := Overlapped.RY;
   end;
 end;
 

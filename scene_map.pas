@@ -220,6 +220,7 @@ var
   AAnimation: TAnimation;
   AnimRect: RRect;
   texture: PSDL_Texture;
+  CameraClip: RRect;
 begin
   AEntities := FEntityManager.GetEntities;
 
@@ -249,6 +250,21 @@ begin
         DstRect.w := AnimRect.RW;
         DstRect.h := AnimRect.RH;
 
+        CameraClip := CameraClippedRect(Sdl2RectToRect(DstRect), FCamera.GetRect);
+
+        //WriteLn(Format('en: %3d %3d %3d %3d', [ DstRect.x, DstRect.y, DstRect.w, DstRect.h]));
+        //WriteLn(Format('ca: %3d %3d %3d %3d', [FCamera.GetRect.RX, FCamera.GetRect.RY, FCamera.GetRect.RW, FCamera.GetRect.RH]));
+        //WriteLn(Format('CL: %3d %3d %3d %3d', [CameraClip.RX, CameraClip.RY, CameraClip.RW, CameraClip.RH]));
+
+        SrcRect.x := AnimRect.RX + CameraClip.RX;
+        SrcRect.y := AnimRect.RY + CameraClip.RY;
+        SrcRect.w := CameraClip.RW;
+        SrcRect.h := CameraClip.RH;
+
+        DstRect.x := (APosComp.x - FCamera.GetRect.RX) + (AnimRect.RW - CameraClip.RW);
+        DstRect.y := (APosComp.y - FCamera.GetRect.RY) + (AnimRect.RH - CameraClip.RH);
+        DstRect.w := CameraClip.RW;
+        DstRect.h := CameraClip.RH;
         // 텍스쳐
         texture := FAssetManager.GetTexture(AAnimation.TextureName);
 
@@ -288,6 +304,7 @@ begin
     begin
       for I := 0 to AEntities.Count - 1 do
       begin
+        AEntity := AEntities[I];
         if AEntity.input <> nil then
           case tmpAct of
             move_down: AEntity.input.down := False;
