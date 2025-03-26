@@ -19,7 +19,9 @@ uses
   listutil,
   atlas,
   game_types,
-  entity_manager, physics_util;
+  xml_reader,
+  entity_manager,
+  physics_util;
 
 var
   AEngine: TEngine;

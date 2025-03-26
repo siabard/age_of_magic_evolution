@@ -50,7 +50,7 @@ begin
   inherited;
 
   FSceneType := map_scene;
-  FTextBox := TTextBox.Create(0, 0, 192, 32, 4, 4);
+  FTextBox := TTextBox.Create(0, 0, 192, 40, 4, 4);
 
   FTextBox.boxTexture := FAssetManager.GetTexture('panel');
   // 텍스트박스 폰트 설정
