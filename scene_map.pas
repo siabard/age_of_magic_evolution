@@ -136,13 +136,13 @@ end;
 
 procedure TSceneMap.SceneUpdate(dt: real);
 var
-  FPS: Integer;
+  FPS: integer;
 begin
   inherited;
 
-  If dt = 0 Then
-     FPS := 0
-  Else
+  if dt = 0 then
+    FPS := 0
+  else
     FPS := 1000 div Trunc(dt * 1000);
   FTextBox.Text := Format('DT : %8d%sFPS: %8d', [Trunc(dt * 1000), sLineBreak, FPS]);
 
@@ -220,6 +220,7 @@ var
   AAnimation: TAnimation;
   AnimRect: RRect;
   texture: PSDL_Texture;
+  CameraClip: RRect;
 begin
   AEntities := FEntityManager.GetEntities;
 
@@ -249,6 +250,21 @@ begin
         DstRect.w := AnimRect.RW;
         DstRect.h := AnimRect.RH;
 
+        CameraClip := CameraClippedRect(Sdl2RectToRect(DstRect), FCamera.GetRect);
+
+        //WriteLn(Format('en: %3d %3d %3d %3d', [ DstRect.x, DstRect.y, DstRect.w, DstRect.h]));
+        //WriteLn(Format('ca: %3d %3d %3d %3d', [FCamera.GetRect.RX, FCamera.GetRect.RY, FCamera.GetRect.RW, FCamera.GetRect.RH]));
+        //WriteLn(Format('CL: %3d %3d %3d %3d', [CameraClip.RX, CameraClip.RY, CameraClip.RW, CameraClip.RH]));
+
+        SrcRect.x := AnimRect.RX + CameraClip.RX;
+        SrcRect.y := AnimRect.RY + CameraClip.RY;
+        SrcRect.w := CameraClip.RW;
+        SrcRect.h := CameraClip.RH;
+
+        DstRect.x := (APosComp.x - FCamera.GetRect.RX) + (AnimRect.RW - CameraClip.RW);
+        DstRect.y := (APosComp.y - FCamera.GetRect.RY) + (AnimRect.RH - CameraClip.RH);
+        DstRect.w := CameraClip.RW;
+        DstRect.h := CameraClip.RH;
         // 텍스쳐
         texture := FAssetManager.GetTexture(AAnimation.TextureName);
 
@@ -262,8 +278,8 @@ end;
 procedure TSceneMap.DoAction(ACode: integer; AAct: EActionType);
 var
   tmpAct: EActionName;
-  AEntity: TEntity;
   AEntities: specialize TList<TEntity>;
+  AEntity: TEntity;
   I: integer;
 begin
   AEntities := FEntityManager.GetEntities;
@@ -273,12 +289,13 @@ begin
     begin
       for I := 0 to AEntities.Count - 1 do
       begin
-        if AEntities[I].input <> nil then
+        AEntity := AEntities[I];
+        if AEntity.input <> nil then
           case tmpAct of
-            move_down: AEntities[I].input.down := True;
-            move_up: AEntities[I].input.up := True;
-            move_left: AEntities[I].input.left := True;
-            move_right: AEntities[I].input.right := True;
+            move_down: AEntity.input.down := True;
+            move_up: AEntity.input.up := True;
+            move_left: AEntity.input.left := True;
+            move_right: AEntity.input.right := True;
           end;
 
       end;
@@ -287,12 +304,13 @@ begin
     begin
       for I := 0 to AEntities.Count - 1 do
       begin
-        if AEntities[I].input <> nil then
+        AEntity := AEntities[I];
+        if AEntity.input <> nil then
           case tmpAct of
-            move_down: AEntities[I].input.down := False;
-            move_up: AEntities[I].input.up := False;
-            move_left: AEntities[I].input.left := False;
-            move_right: AEntities[I].input.right := False;
+            move_down: AEntity.input.down := False;
+            move_up: AEntity.input.up := False;
+            move_left: AEntity.input.left := False;
+            move_right: AEntity.input.right := False;
           end;
 
       end;

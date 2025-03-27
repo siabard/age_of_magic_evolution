@@ -118,8 +118,6 @@
         <Filename Value="scene.pas"/>
         <IsPartOfProject Value="True"/>
         <EditorIndex Value="10"/>
-        <CursorPos X="18" Y="266"/>
-        <FoldState Value=" T4602 T7GBM T3i20B1 pkblA064 PLX02"/>
         <UsageCount Value="262"/>
         <Loaded Value="True"/>
       </Unit>
@@ -135,7 +133,7 @@
         <Filename Value="scene_map.pas"/>
         <IsPartOfProject Value="True"/>
         <EditorIndex Value="12"/>
-        <TopLine Value="65"/>
+        <TopLine Value="53"/>
         <CursorPos X="44" Y="53"/>
         <UsageCount Value="213"/>
         <Loaded Value="True"/>
@@ -177,18 +175,18 @@
       <Unit>
         <Filename Value="physics_util.pas"/>
         <IsPartOfProject Value="True"/>
+        <IsVisibleTab Value="True"/>
         <EditorIndex Value="14"/>
-        <TopLine Value="290"/>
-        <CursorPos X="59" Y="316"/>
+        <TopLine Value="115"/>
+        <CursorPos X="97" Y="143"/>
         <UsageCount Value="318"/>
         <Loaded Value="True"/>
       </Unit>
       <Unit>
         <Filename Value="xml_reader.pas"/>
-        <IsVisibleTab Value="True"/>
         <EditorIndex Value="8"/>
-        <TopLine Value="192"/>
-        <CursorPos X="52" Y="213"/>
+        <TopLine Value="155"/>
+        <CursorPos X="101" Y="188"/>
         <UsageCount Value="345"/>
         <Loaded Value="True"/>
       </Unit>
