@@ -17,8 +17,9 @@ type
     FMovement: TMovementComponent;
     FIsAlive: boolean;
     FCollide: TCollideComponent;
-    nid: Integer;
-    FTag: String;
+    nid: integer;
+    FZIndex: integer;
+    FTag: string;
 
   public
     constructor Create;
@@ -29,11 +30,12 @@ type
     property input: TInputComponent read FInput write FInput;
     property movement: TMovementComponent read FMovement write FMovement;
     property collide: TCollideComponent read FCollide write FCollide;
-    property id: Integer read nid;
-    property tag: String read FTag write FTag;
+    property id: integer read nid;
+    property tag: string read FTag write FTag;
+    property zindex: integer read FZIndex write FZIndex;
     function GetBoundigRect: RRect;
     function GetPrevBoundingRect: RRect;
-    function setNid(AId: Integer): Integer;
+    function setNid(AId: integer): integer;
   end;
 
 
@@ -71,7 +73,7 @@ begin
     FMovement.Free;
   end;
 
-  if Assigned(FCollide) Then
+  if Assigned(FCollide) then
   begin
     FreeAndNil(FCollide);
   end;
@@ -93,7 +95,7 @@ begin
   Result.RH := Self.collide.BoundBox.RH;
 end;
 
-function TEntity.setNid(AId: Integer): Integer;
+function TEntity.setNid(AId: integer): integer;
 begin
   Self.nid := AId;
   Result := Self.nid;

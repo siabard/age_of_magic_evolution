@@ -14,6 +14,8 @@ type
   EActionType = (action_start, action_stop);
   ESceneType = (void_scene, title_scene, map_scene, battle_scene, end_scene);
 
+  { TScene }
+
   TScene = class
   protected
     FCamera: TCamera;
@@ -24,6 +26,7 @@ type
     FEntityManager: TEntityManager;
     FActionMap: specialize THashMap<integer, EActionName>;
     FTileMap: specialize THashMap<string, RTilemap>;
+    FCurrentSceneName: string;
   public
     constructor Create(AM: TAssetManager; AR: PSDL_Renderer; AK: TKeyInput);
     destructor Destroy; override;
@@ -36,7 +39,6 @@ type
     property AssetManager: TassetManager read FAssetManager write FAssetManager;
     property SceneType: ESceneType read FSceneType;
     property EntityManager: TEntityManager read FEntityManager write FEntityManager;
-
   end;
 
 implementation
@@ -74,7 +76,7 @@ var
   ValY: integer;
   ValW: integer;
   ValH: integer;
-  ValCode: Integer;
+  ValCode: integer;
   ATileMap: RTilemap;
   TilemapName: string;
   ATileset: RTileset;
@@ -211,9 +213,18 @@ begin
                   end;
                 end;
               end;
+              'map': begin
+                FCurrentSceneName := Fields[2];
+              end;
+
             end;
           end;
           'map': begin
+            { TODO 아래의 코드를 이용하여 Entity를 Scene::Init 에서
+              생성할 수 있으면 된다.
+              Entity는 Animation, Position 이 있으며, Collide 타일셋에 한해
+              Animation 대신 BoundingBox 가 추가되면 된다.
+            }
             // 지도를 읽는다.
             ATilemap := xml_reader.ParseTilemap(Fields[2]);
             TilemapName := Fields[1];
@@ -229,13 +240,17 @@ begin
               TilesetName := ATileset.tilesetname;
 
               // 타일셋에서 Texture를 생성한다.
-              FAssetManager.LoadTexture(TilesetName, PAnsiChar(AnsiString(ATileset.image_path)));
+              FAssetManager.LoadTexture(TilesetName,
+                pansichar(ansistring(ATileset.image_path)));
 
               // 텍스쳐에서 아틀라스를 생성한다.
               FAssetManager.AddAtlas(TilesetName, TilesetName,
                 ATileset.tilewidth, ATileset.tileheight);
 
             end;
+
+            // 모든 생성이 완료된 경우 entity를 생성한다.
+
           end;
         end;
       end;

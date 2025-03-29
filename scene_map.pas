@@ -240,7 +240,7 @@ begin
 
   // Tile 출력해보기
   // 레이어의 가로와 세로는 ATilemap 에 들어있음.
-  if FTileMap.TryGetValue('scene_1', ATileMap) then
+  if FTileMap.TryGetValue(FCurrentSceneName, ATileMap) then
   begin
     for I := 0 to ATileMap.FLayers.Count - 1 do
     begin
