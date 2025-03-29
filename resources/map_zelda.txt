@@ -23,3 +23,7 @@ set entity block current_animation armor
 # collision
 set entity player collision 0 0 16 16
 set entity block collision 0 0 16 16
+
+
+# Map: map [map name] [map path]
+map scene_1 resources/test.xml

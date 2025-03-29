@@ -30,10 +30,12 @@ type
 implementation
 
 uses
+  atlas,
   component,
   animation,
   game_types,
   physics_util,
+  xml_reader,
   Generics.Collections;
 
 constructor TSceneMap.Create(AM: TAssetManager; AR: PSDL_Renderer; AK: TKeyInput);
@@ -164,11 +166,15 @@ begin
   if itemTexture <> nil then
     SDL_RenderCopy(FRenderer, itemTexture, nil, nil);
   }
+
+  Self.RenderSystem;
+
+  { 기타 정보창은 모든 렌더링 이후에 진행 }
   FTextBox.DrawPanel(FRenderer);
 
   FTextBox.Draw(FRenderer);
 
-  Self.RenderSystem;
+
   SDL_RenderPresent(FRenderer);
 
 end;
@@ -214,14 +220,70 @@ var
   AEntities: specialize TList<TEntity>;
   AAnimComp: TAnimationComponent;
   APosComp: TPositionComponent;
-  I: integer;
+  Y, X, I: integer;
   SrcRect: TSDL_Rect;
   DstRect: TSDL_Rect;
   AAnimation: TAnimation;
   AnimRect: RRect;
   texture: PSDL_Texture;
   CameraClip: RRect;
+  ATileMap: RTilemap;
+  ALayer: RLayer;
+  gid: integer;
+  ATileset: RTileset;
+  TI: integer; // 타일셋 인덱스
+  CI: integer; // 레이어내 셀의 인덱스
+  AAtlas: TAtlas;
+  AI: integer; // 해당 타일셋에서 firstgid 를 뺀 진짜 값.
+  ARect: RRect; // Atlas의 좌표
 begin
+
+  // Tile 출력해보기
+  // 레이어의 가로와 세로는 ATilemap 에 들어있음.
+  if FTileMap.TryGetValue('scene_1', ATileMap) then
+  begin
+    for I := 0 to ATileMap.FLayers.Count - 1 do
+    begin
+      for Y := 0 to ATileMap.FHeight - 1 do
+      begin
+        for X := 0 to ATilemap.FWidth - 1 do
+        begin
+          CI := Y * ATileMap.FHeight + X;
+          ALayer := ATilemap.FLayers[I];
+          Gid := ALayer.Data[CI];
+
+          // Gid 가 0인 내역은 빈 곳임.
+          if Gid > 0 then
+          begin
+            TI := getTilesetIndex(ATileMap.FTilesets, Gid);
+
+            // 해당하는 타일셋을 얻었으니 해당하는 텍스쳐 아틀라스에서
+            // Rect를 받아옴.
+            // 원칙은 얘네들도 전부 Entity로 만들어야하지만, 일단 여기에서는
+            // 출력 가능여부만 확인
+            // 이후에 Tile 관련 Entity로 전부 바꿀 것
+            ATileset := ATilemap.FTilesets[TI];
+            AAtlas := AssetManager.GetAtlas(ATileset.tilesetname);
+            texture := AssetManager.GetTexture(ATileset.tilesetname);
+            AI := Gid - ATileset.firstgid;
+            ARect := AAtlas.Rects[AI];
+
+            // 이제 렌더링한다.
+            SrcRect := RectToSdl2Rect(ARect);
+            DstRect.x:= ATileset.tilewidth * x;
+            DstRect.y := ATileset.tileheight * y;
+            DstRect.w := ATileset.tilewidth;
+            DstRect.h := ATileset.tileheight;
+            SDL_RenderCopy(FRenderer, texture, @SrcRect, @DstRect);
+          end;
+
+        end;
+      end;
+    end;
+  end;
+
+
+
   AEntities := FEntityManager.GetEntities;
 
   for I := 0 to AEntities.Count - 1 do

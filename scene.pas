@@ -1,12 +1,12 @@
 unit scene;
 
-{$mode ObjFPC}{$H+}
+{$mode ObjFPC}{$H+}{$J-}
 
 interface
 
 uses
   Classes, SysUtils, asset_manager, sdl2, entity_manager, Generics.Collections,
-  camera, KeyInput, action;
+  camera, KeyInput, action, xml_reader;
 
 type
 
@@ -23,6 +23,7 @@ type
     FKeyInput: TKeyInput;
     FEntityManager: TEntityManager;
     FActionMap: specialize THashMap<integer, EActionName>;
+    FTileMap: specialize THashMap<string, RTilemap>;
   public
     constructor Create(AM: TAssetManager; AR: PSDL_Renderer; AK: TKeyInput);
     destructor Destroy; override;
@@ -53,7 +54,7 @@ begin
   FActionMap := specialize THashMap<integer, EActionName>.Create;
   if Assigned(AK) then
     FKeyInput := AK;
-
+  FTileMap := specialize THashMap<string, RTilemap>.Create;
 end;
 
 
@@ -73,7 +74,11 @@ var
   ValY: integer;
   ValW: integer;
   ValH: integer;
-  ValCode: integer;
+  ValCode: Integer;
+  ATileMap: RTilemap;
+  TilemapName: string;
+  ATileset: RTileset;
+  TilesetName: string;
 begin
   { APath에서 설정파일을 읽어 Scene 에 Entity 등을 구성한다. }
   Fields := TStringList.Create;
@@ -208,6 +213,30 @@ begin
               end;
             end;
           end;
+          'map': begin
+            // 지도를 읽는다.
+            ATilemap := xml_reader.ParseTilemap(Fields[2]);
+            TilemapName := Fields[1];
+
+            Self.FTileMap.Add(TilemapName, ATilemap);
+
+            // 타일셋과 아틀라스를 등록한다.
+
+            for ATileset in ATileMap.FTilesets do
+            begin
+              // 개별 타일셋에서 AtlasId 와 TextureId 는 동일하다.
+              // 타일셋의 이름이 해당 아이디이다.
+              TilesetName := ATileset.tilesetname;
+
+              // 타일셋에서 Texture를 생성한다.
+              FAssetManager.LoadTexture(TilesetName, PAnsiChar(AnsiString(ATileset.image_path)));
+
+              // 텍스쳐에서 아틀라스를 생성한다.
+              FAssetManager.AddAtlas(TilesetName, TilesetName,
+                ATileset.tilewidth, ATileset.tileheight);
+
+            end;
+          end;
         end;
       end;
     except
@@ -224,7 +253,32 @@ begin
 end;
 
 destructor TScene.Destroy;
+var
+  ATileMap: RTilemap;
+  ATileset: RTileset;
+  TilesetName: string;
 begin
+  // 타일 맵 지우기
+  // 타일맵에는 각 레이어와 타일셋이 리스트로 되어있으므로
+  // 삭제해주어야한다.
+  // 그리고 AssetManager 에서 타일셋에 대한 텍스쳐와 아틀라스도 삭제한다.
+  for ATileMap in FTileMap.Values do
+  begin
+    for ATileset in ATileMap.FTilesets do
+    begin
+      // 개별 타일셋에서 AtlasId 와 TextureId 는 동일하다.
+      // 타일셋의 이름이 해당 아이디이다.
+      TilesetName := ATileset.tilesetname;
+
+      Self.AssetManager.RemoveAtlas(TilesetName);
+      Self.AssetManager.RemoveTexture(TilesetName);
+    end;
+
+    ATileMap.FLayers.Free;
+    ATileMap.FTilesets.Free;
+  end;
+  FTileMap.Free;
+
   FEntityManager.Free;
   FCamera.Free;
   FActionMap.Free;

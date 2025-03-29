@@ -40,6 +40,7 @@ uses
 type
   RTileset = record
     image_source: string;
+    image_path: string;
     firstgid: integer;
     tilesetname: string;
     tilewidth: integer;
@@ -55,6 +56,8 @@ type
   end;
 
   RTilemap = record
+    FWidth: integer;
+    FHeight: integer;
     FTilesets: specialize TList<RTileset>;
     FLayers: specialize TList<RLayer>;
   end;
@@ -69,6 +72,7 @@ function AnalyzeLayer(IOrder: integer; LayerNode: TDOMNode): RLayer;
 procedure DebugLayer(ALayer: RLayer);
 function ParseTileset(APath: string): RTileset;
 function ParseTilemap(APath: string): RTilemap;
+function getTilesetIndex(Tilesets: specialize TList<RTileset>; gid: Integer): integer;
 
 implementation
 
@@ -89,7 +93,7 @@ begin
   Result := '';
   for I := 0 to ANode.Attributes.Length - 1 do
   begin
-    if ANode.Attributes.Item[I].NodeName = UnicodeString(AName) then
+    if ANode.Attributes.Item[I].NodeName = unicodestring(AName) then
     begin
       Result := Format('%s', [ANode.Attributes.Item[I].NodeValue]);
       Break;
@@ -106,7 +110,7 @@ begin
   Result := False;
   for I := 0 to ANode.Attributes.Length - 1 do
   begin
-    if ANode.Attributes.Item[I].NodeName = UnicodeString(AName) then
+    if ANode.Attributes.Item[I].NodeName = unicodestring(AName) then
     begin
 
       Result := True;
@@ -127,7 +131,7 @@ begin
 
   for I := 0 to ANode.ChildNodes.Count - 1 do
   begin
-    if ANode.ChildNodes.Item[I].NodeName = UnicodeString(AName) then
+    if ANode.ChildNodes.Item[I].NodeName = unicodestring(AName) then
     begin
       Result := FindAttributeValue(ANode.ChildNodes.Item[I], AAttributeName);
       break;
@@ -193,7 +197,7 @@ begin
   Result := TStringList.Create;
   Result.StrictDelimiter := True;
   Result.Delimiter := Delimiter[1]; // 단일 문자 Delimiter만 가능
-  Result.DelimitedText := AnsiString(S);
+  Result.DelimitedText := ansistring(S);
 end;
 
 { layer 정보를 분석하여 RLayer 을 반환한다. }
@@ -210,7 +214,8 @@ begin
   // layer 노드는 반드시 하나의 data노드를 갖는다.
   DataNode := LayerNode.FirstChild;
 
-  MapData := unicodestring(StringReplace(AnsiString(DataNode.FirstChild.NodeValue), #10, '', [rfReplaceAll]));
+  MapData := unicodestring(StringReplace(ansistring(DataNode.FirstChild.NodeValue),
+    #10, '', [rfReplaceAll]));
   MapCells := SplitString(MapData, ',');
 
   SetLength(tmpData, MapCells.Count);
@@ -255,9 +260,12 @@ var
   code: integer;
   tilewidth: integer;
   tileheight: integer;
+  FilePath: string;
+  image_source: string;
 begin
   try
     ReadXMLFile(Doc, APath);
+    FilePath := ExtractFileDir(APath);
 
     // name, tilewidth, tileheight, columns
     Result.tilesetname := Format('%s',
@@ -275,7 +283,10 @@ begin
     begin
       if Child.NodeName = 'image' then
       begin
-        Result.image_source := Format('%s', [FindAttributeValue(Child, 'source')]);
+        image_source := Format('%s', [FindAttributeValue(Child, 'source')]);
+        ;
+        Result.image_source := image_source;
+        Result.image_path := ConcatPaths([FilePath, image_source]);
       end;
       Child := Child.NextSibling;
     end;
@@ -297,6 +308,8 @@ var
   code: integer;
   firstgid: integer;
   TilesetLocation: string;
+  Width: integer;
+  Height: integer;
 begin
   tilesets := specialize TList<RTileset>.Create;
   layers := specialize TList<RLayer>.Create;
@@ -307,6 +320,11 @@ begin
     Child := Doc.DocumentElement.FirstChild;
     I := 1;
 
+    Val(FindAttributeValue(Doc.DocumentElement, 'width'), Width, code);
+    Val(FindAttributeValue(Doc.DocumentElement, 'height'), Height, code);
+
+    Result.FWidth := Width;
+    Result.FHeight := Height;
     while Assigned(Child) do
     begin
 
@@ -333,6 +351,7 @@ begin
         begin
           // 해당 타일셋 정보
           ATileset := AnalyzeTileset(Child);
+          ATileset.image_path := ConcatPaths([FilePath, ATileset.image_source]);
           // DebugTileset(AnalyzeTileset(Child));
 
           tilesets.Add(ATileset);
@@ -354,6 +373,27 @@ begin
 
   Result.FLayers := layers;
   Result.FTilesets := tilesets;
+end;
+
+function getTilesetIndex(Tilesets: specialize TList<RTileset>; gid: Integer): integer;
+var
+  I: integer;
+  ATileset: RTileset;
+begin
+  // 주어진 gid 가 들어가야할 Tileset 인덱스를 돌려준다.
+  Result := Tilesets.Count - 1; // 기본 값은 가장 마지막 인덱스
+
+  for I := Tilesets.Count - 1 downto 0 do
+  begin
+    // 가장 처음에 만나는 작거나 같은 수에 해당하는 인덱스를 반환
+    ATileset := Tilesets[I];
+    if ATileset.firstgid <= gid then
+    begin
+      Result := I;
+      break;
+      ;
+    end;
+  end;
 end;
 
 end.

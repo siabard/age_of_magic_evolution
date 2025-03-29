@@ -13,12 +13,15 @@ type
 
   TTextureDictionary = specialize TDictionary<string, PSDL_Texture>;
 
+  { TAssetManager }
+
   TAssetManager = class
   private
     FSdlRenderer: PSDL_Renderer;
     FTextures: TTextureDictionary;
     FAnimations: specialize THashMap<string, TAnimation>;
-    FATlas: specialize THashMap<string, TAtlas>;
+    FAtlas: specialize THashMap<string, TAtlas>;
+
   public
     constructor Create(BRenderer: PSDL_Renderer);
     destructor Destroy; override;
@@ -29,7 +32,9 @@ type
     function GetAnimation(animationId: string): TAnimation;
     procedure AddAtlas(atlasId: string; textureId: string; tile_width: integer;
       tile_height: integer);
-    function GetAtlas(atlasId: String): TAtlas;
+    function GetAtlas(atlasId: string): TAtlas;
+    procedure RemoveTexture(textureId: string);
+    procedure RemoveAtlas(atlasId: string);
   end;
 
 
@@ -40,7 +45,7 @@ begin
   FSdlRenderer := BRenderer;
   FTextures := TTextureDictionary.Create;
   FAnimations := specialize THashMap<string, TAnimation>.Create;
-  FATlas := specialize THashMap<string, TAtlas>.Create;
+  FAtlas := specialize THashMap<string, TAtlas>.Create;
 end;
 
 destructor TAssetManager.Destroy;
@@ -49,11 +54,11 @@ var
   AnimationValue: TAnimation;
   AtlasValue: TAtlas;
 begin
-  for AtlasValue in FATlas.Values do
+  for AtlasValue in FAtlas.Values do
   begin
     AtlasValue.Free;
   end;
-  FATlas.Free;
+  FAtlas.Free;
 
   for AnimationValue in FAnimations.Values do
   begin
@@ -99,12 +104,12 @@ begin
   end;
 end;
 
-
 procedure TAssetManager.LoadTexture(textureId: string; Path: pansichar);
 var
   ATexture: PSDL_Texture;
 begin
   LogDebug(' Add New Texture : ' + textureId);
+  LogDebug('    File path : ' + Path);
   ATexture := IMG_LoadTexture(FSdlRenderer, Path);
   Self.AddTexture(textureId, ATexture);
 end;
@@ -134,7 +139,7 @@ var
   texture_width: integer;
   texture_height: integer;
   texture_for_atlas: PSDL_Texture;
-  texture_format: UInt32;
+  texture_format: uint32;
   texture_access: integer;
 begin
   AtlasValue := TAtlas.Create;
@@ -145,19 +150,40 @@ begin
     SDL_QueryTexture(texture_for_atlas, @texture_format, @texture_access,
       @texture_width, @texture_height);
     AtlasValue.MakeAtlas(texture_width, texture_height, tile_width, tile_height);
-    FATlas.Add(atlasId, AtlasValue);
+    FAtlas.Add(atlasId, AtlasValue);
   end;
 
 end;
 
-function TAssetManager.GetAtlas(atlasId: String): TAtlas;
+function TAssetManager.GetAtlas(atlasId: string): TAtlas;
 var
   SearchedValue: TAtlas;
 begin
-  if FATlas.TryGetValue(atlasId, SearchedValue) then
+  if FAtlas.TryGetValue(atlasId, SearchedValue) then
     Result := SearchedValue
   else
     Result := nil;
+end;
+
+procedure TAssetManager.RemoveTexture(textureId: string);
+var
+  ATexture: PSDL_Texture;
+begin
+  ATexture := GetTexture(textureId);
+  if Assigned(ATexture) then
+    SDL_DestroyTexture(ATexture);
+  Self.FTextures.Remove(textureId);
+end;
+
+procedure TAssetManager.RemoveAtlas(atlasId: string);
+var
+  AAtlas: TAtlas;
+begin
+  AAtlas := GetAtlas(atlasId);
+  if Assigned(AAtlas) then
+    AAtlas.Free;
+  Self.FAtlas.Remove(atlasId);
+
 end;
 
 end.
