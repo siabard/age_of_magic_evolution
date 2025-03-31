@@ -5,16 +5,14 @@ unit scene;
 interface
 
 uses
-  Classes, SysUtils, asset_manager, sdl2, entity_manager, Generics.Collections,
-  camera, KeyInput, action, xml_reader;
+  Classes, SysUtils, asset_manager, sdl2, entity_manager, entity, Generics.Collections,
+  camera, KeyInput, xml_reader;
 
 type
 
   EActionName = (move_left, move_right, move_up, move_down);
   EActionType = (action_start, action_stop);
   ESceneType = (void_scene, title_scene, map_scene, battle_scene, end_scene);
-
-  { TScene }
 
   TScene = class
   protected
@@ -44,7 +42,7 @@ type
 implementation
 
 uses
-  entity, component, LogUtil, animation, StrUtils;
+  component, LogUtil, animation, StrUtils, atlas;
 
 constructor TScene.Create(AM: TAssetManager; AR: PSDL_Renderer; AK: TKeyInput);
 begin
@@ -52,13 +50,50 @@ begin
   FRenderer := AR;
   FSceneType := void_scene;
   FEntityManager := TEntityManager.Create;
-  FCamera := TCamera.Create('main_camera', 0, 0, 320, 240);
+  FCamera := TCamera.Create('main_camera', 0, 0, 320, 400);
   FActionMap := specialize THashMap<integer, EActionName>.Create;
   if Assigned(AK) then
     FKeyInput := AK;
   FTileMap := specialize THashMap<string, RTilemap>.Create;
 end;
 
+
+destructor TScene.Destroy;
+var
+  ATileMap: RTilemap;
+  ATileset: RTileset;
+  TilesetName: string;
+  AEntity: TEntity;
+  AListEntity: TListEntity;
+  I: integer;
+begin
+
+  // 타일 맵 지우기
+  // 타일맵에는 각 레이어와 타일셋이 리스트로 되어있으므로
+  // 삭제해주어야한다.
+  // 그리고 AssetManager 에서 타일셋에 대한 텍스쳐와 아틀라스도 삭제한다.
+  for ATileMap in FTileMap.Values do
+  begin
+    for ATileset in ATileMap.FTilesets do
+    begin
+      // 개별 타일셋에서 AtlasId 와 TextureId 는 동일하다.
+      // 타일셋의 이름이 해당 아이디이다.
+      TilesetName := ATileset.tilesetname;
+
+      Self.AssetManager.RemoveAtlas(TilesetName);
+      Self.AssetManager.RemoveTexture(TilesetName);
+    end;
+
+    ATileMap.FLayers.Free;
+    ATileMap.FTilesets.Free;
+  end;
+  FTileMap.Free;
+
+  FEntityManager.Free;
+  FCamera.Free;
+  FActionMap.Free;
+  inherited;
+end;
 
 procedure TScene.SceneInit(APath: string);
 var
@@ -69,6 +104,7 @@ var
   ACompPos: TPositionComponent;
   ACompAnim: TAnimationComponent;
   ACompColl: TCollideComponent;
+  ADepthComponent: TDepthComponent;
   configFile: TextFile;
   config: string;
   Fields: TStringList;
@@ -81,6 +117,24 @@ var
   TilemapName: string;
   ATileset: RTileset;
   TilesetName: string;
+  AHashMapKey: integer;
+  ValDepth: Integer;
+
+  { Layer 엔터티 생성용 }
+  ALayer: RLayer;
+  LI: integer;
+  LCI: integer;
+  LayerGid: integer;
+  LCid: string;
+  LGroupName: string;
+  LEntity: TEntity;
+  LCol: integer;
+  LRow: integer;
+  TI: integer;
+  AnimationName: string;
+  LAtlas: TAtlas;
+  AI: integer;
+  firstgid: integer;
 begin
   { APath에서 설정파일을 읽어 Scene 에 Entity 등을 구성한다. }
   Fields := TStringList.Create;
@@ -211,6 +265,15 @@ begin
                       AEntity.input := ACompInput;
                     end;
                   end;
+                  'depth': begin
+                    If NOT Assigned(AEntity.Depth) Then
+                    begin
+                      ADepthComponent := TDepthComponent.Create(Format('%s_%s_%s', ['depth', Fields[2], Fields[4]] ));
+                      Val(Fields[4], ValDepth, ValCode);
+                      ADepthComponent.depth:= ValDepth;
+                      AEntity.depth := ADepthComponent;
+                    end;
+                  end;
                 end;
               end;
               'map': begin
@@ -224,6 +287,8 @@ begin
               생성할 수 있으면 된다.
               Entity는 Animation, Position 이 있으며, Collide 타일셋에 한해
               Animation 대신 BoundingBox 가 추가되면 된다.
+              FTileMap 을 삭제했으면 좋겠는데, 데이터양이 아직 크기 않으므로
+              이후에 Map에 대한 Entity조작이 안정화되면 삭제한다.
             }
             // 지도를 읽는다.
             ATilemap := xml_reader.ParseTilemap(Fields[2]);
@@ -233,6 +298,7 @@ begin
 
             // 타일셋과 아틀라스를 등록한다.
 
+            WriteLn('Register Tilesets');
             for ATileset in ATileMap.FTilesets do
             begin
               // 개별 타일셋에서 AtlasId 와 TextureId 는 동일하다.
@@ -247,9 +313,66 @@ begin
               FAssetManager.AddAtlas(TilesetName, TilesetName,
                 ATileset.tilewidth, ATileset.tileheight);
 
+              // 해당 타일맵에 맞는 애니메이션을 만든다.
+              // 모든 아틀라스에 대해 만들면 된다.
+              LAtlas := FAssetManager.GetAtlas(TilesetName);
+              for  AI := 0 to LAtlas.Rects.Count - 1 do
+              begin
+                // AAnimation := TAnimation.Create(AnimationName, AAtlas.TextureName, FrameStart, FrameSize, AAtlas.Rects);
+                AnimationName := Format('tileset_%s_%d', [TilesetName, AI]);
+                AAnimation := TAnimation.Create(AnimationName,
+                  LAtlas.TextureName, AI, 1, LAtlas.Rects);
+                FAssetManager.AddAnimation(AnimationName, AAnimation);
+              end;
             end;
 
             // 모든 생성이 완료된 경우 entity를 생성한다.
+            // Animation은 texture 와 atlas 가 생성되었기때문에 만들어낼 수 있다.
+            //  Entity를 만든다. (단 layer 항목의 0은 제외..)
+            // Entity 를 생성할 때 태그는 Layer_[tilename]_[layer_index] 식으로 만든다.
+            for LI := 0 to ATilemap.FLayers.Count - 1 do
+            begin
+              ALayer := Atilemap.FLayers[LI];
+              LGroupName := Format('layer_%s_%d', [TilemapName, LI]);
+              for LCI := Low(ALayer.Data) to High(ALayer.Data) do
+              begin
+                LayerGid := ALayer.Data[LCI];
+                LRow := LCI div ATilemap.FWidth;
+                LCol := LCI mod ATilemap.FWidth;
+
+                if LayerGid > 0 then
+                begin
+                  LEntity := FEntityManager.AddEntity(LGroupName);
+                  TI := getTilesetIndex(ATileMap.FTilesets, LayerGid);
+                  firstgid := ATileMap.FTilesets[TI].firstgid;
+                  // RenderSystem을 참고해서 필요 Component 들을 만든다. (Animation / Position)
+                  ADepthComponent :=
+                    TDepthComponent.Create(Format('depth_%s_%d', [LGroupName, LCI]));
+                  ADepthComponent.depth := LI;
+                  ACompPos :=
+                    TPositionComponent.Create(Format('pos_%s_%d', [LGroupName, LCI]));
+                  ACompPos.X := LCol * ATileMap.FTilesets[TI].tilewidth;
+                  ACompPos.Y := LRow * ATileMap.FTilesets[TI].tileheight;
+                  ACompPos.PX := 0;
+                  ACompPos.PY := 0;
+                  ACompAnim :=
+                    TAnimationComponent.Create(Format('ani_%s_%d', [LGroupName, LCI]));
+
+                  AAnimation :=
+                    FAssetManager.GetAnimation(Format('tileset_%s_%d',
+                    [ATileMap.FTilesets[TI].tilesetname, LayerGid - firstgid]));
+
+                  ACompAnim.SetAnimation(Format('ani_%s_%d',
+                    [ATileMap.FTilesets[TI].tilesetname, LayerGid - firstgid]),
+                    AAnimation);
+                  ACompAnim.Duration := 300;
+                  LEntity.animation := ACompAnim;
+                  LEntity.position := ACompPos;
+                end;
+              end;
+            end;
+
+            FEntityManager.Update;
 
           end;
         end;
@@ -267,38 +390,6 @@ begin
   end;
 end;
 
-destructor TScene.Destroy;
-var
-  ATileMap: RTilemap;
-  ATileset: RTileset;
-  TilesetName: string;
-begin
-  // 타일 맵 지우기
-  // 타일맵에는 각 레이어와 타일셋이 리스트로 되어있으므로
-  // 삭제해주어야한다.
-  // 그리고 AssetManager 에서 타일셋에 대한 텍스쳐와 아틀라스도 삭제한다.
-  for ATileMap in FTileMap.Values do
-  begin
-    for ATileset in ATileMap.FTilesets do
-    begin
-      // 개별 타일셋에서 AtlasId 와 TextureId 는 동일하다.
-      // 타일셋의 이름이 해당 아이디이다.
-      TilesetName := ATileset.tilesetname;
-
-      Self.AssetManager.RemoveAtlas(TilesetName);
-      Self.AssetManager.RemoveTexture(TilesetName);
-    end;
-
-    ATileMap.FLayers.Free;
-    ATileMap.FTilesets.Free;
-  end;
-  FTileMap.Free;
-
-  FEntityManager.Free;
-  FCamera.Free;
-  FActionMap.Free;
-  inherited;
-end;
 
 procedure TScene.SceneUpdate(dt: real);
 begin

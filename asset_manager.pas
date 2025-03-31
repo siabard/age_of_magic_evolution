@@ -62,6 +62,7 @@ begin
 
   for AnimationValue in FAnimations.Values do
   begin
+    WriteLn(AnimationValue.Name, ' Freed');
     AnimationValue.Free;
   end;
 

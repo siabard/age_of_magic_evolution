@@ -19,6 +19,7 @@ set entity block movement 0 0
 set entity block position 240 240
 set entity block animation armor
 set entity block current_animation armor
+set entity player depth 4
 
 # collision
 set entity player collision 0 0 16 16

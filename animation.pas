@@ -51,7 +51,7 @@ end;
 
 destructor TAnimation.Destroy;
 begin
-  LogDebug('TAnimation.Destroy');
+  LogDebug('TAnimation.Destroy ' + FName);
   FFrameRects.Free;
   inherited Destroy;
 end;

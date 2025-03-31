@@ -238,6 +238,7 @@ var
   ARect: RRect; // Atlas의 좌표
 begin
 
+  {
   // Tile 출력해보기
   // 레이어의 가로와 세로는 ATilemap 에 들어있음.
   if FTileMap.TryGetValue(FCurrentSceneName, ATileMap) then
@@ -282,6 +283,7 @@ begin
     end;
   end;
 
+  }
 
 
   AEntities := FEntityManager.GetEntities;
@@ -314,23 +316,54 @@ begin
 
         CameraClip := CameraClippedRect(Sdl2RectToRect(DstRect), FCamera.GetRect);
 
-        //WriteLn(Format('en: %3d %3d %3d %3d', [ DstRect.x, DstRect.y, DstRect.w, DstRect.h]));
-        //WriteLn(Format('ca: %3d %3d %3d %3d', [FCamera.GetRect.RX, FCamera.GetRect.RY, FCamera.GetRect.RW, FCamera.GetRect.RH]));
-        //WriteLn(Format('CL: %3d %3d %3d %3d', [CameraClip.RX, CameraClip.RY, CameraClip.RW, CameraClip.RH]));
 
-        SrcRect.x := AnimRect.RX + CameraClip.RX;
-        SrcRect.y := AnimRect.RY + CameraClip.RY;
-        SrcRect.w := CameraClip.RW;
-        SrcRect.h := CameraClip.RH;
+        if (CameraClip.RW > 0) and (CameraClip.RH > 0) then
+        begin
 
-        DstRect.x := (APosComp.x - FCamera.GetRect.RX) + (AnimRect.RW - CameraClip.RW);
-        DstRect.y := (APosComp.y - FCamera.GetRect.RY) + (AnimRect.RH - CameraClip.RH);
-        DstRect.w := CameraClip.RW;
-        DstRect.h := CameraClip.RH;
-        // 텍스쳐
-        texture := FAssetManager.GetTexture(AAnimation.TextureName);
+        {
+        WriteLn(Format('en: %3d %3d %3d %3d', [ DstRect.x, DstRect.y, DstRect.w, DstRect.h]));
+        WriteLn(Format('ca: %3d %3d %3d %3d', [FCamera.GetRect.RX, FCamera.GetRect.RY, FCamera.GetRect.RW, FCamera.GetRect.RH]));
+        WriteLn(Format('CL: %3d %3d %3d %3d', [CameraClip.RX, CameraClip.RY, CameraClip.RW, CameraClip.RH]));
+        }
 
-        SDL_RenderCopy(FRenderer, texture, @SrcRect, @DstRect);
+          if DstRect.X >= FCamera.GetRect.RX then
+          begin
+            SrcRect.x := AnimRect.RX;
+          end
+          else
+          begin
+            SrcRect.x := AnimRect.RX + (AnimRect.RW - CameraClip.RX);
+          end;
+
+          if DstRect.Y >= FCamera.GetRect.RY then
+          begin
+            SrcRect.Y := AnimRect.RY;
+          end
+          else
+          begin
+            SrcRect.Y := AnimRect.RY + (AnimRect.RH - CameraClip.RH);
+          end;
+
+
+          SrcRect.w := CameraClip.RW;
+          SrcRect.h := CameraClip.RH;
+
+          DstRect.x := (APosComp.x - FCamera.GetRect.RX);
+          DstRect.y := (APosComp.y - FCamera.GetRect.RY);
+          DstRect.w := CameraClip.RW;
+          DstRect.h := CameraClip.RH;
+          // 텍스쳐
+          texture := FAssetManager.GetTexture(AAnimation.TextureName);
+
+          {
+          WriteLn(Format('SRC : %d %d %d %d',
+            [SrcRect.x, SrcRect.y, SrcRect.w, SrcRect.h]));
+          WriteLn(
+            Format('DST : %d %d %d %d', [DstRect.x, DstRect.y, DstRect.w, DstRect.h]));
+          }
+          SDL_RenderCopy(FRenderer, texture, @SrcRect, @DstRect);
+
+        end;
       end;
 
     end;

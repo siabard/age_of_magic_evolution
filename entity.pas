@@ -9,6 +9,8 @@ uses
 
 type
 
+  { TEntity }
+
   TEntity = class
   private
     FPosition: TPositionComponent;
@@ -17,9 +19,11 @@ type
     FMovement: TMovementComponent;
     FIsAlive: boolean;
     FCollide: TCollideComponent;
+    FDepth: TDepthComponent;
     nid: integer;
     FZIndex: integer;
     FTag: string;
+    FGroup: TStringList;
 
   public
     constructor Create;
@@ -30,12 +34,16 @@ type
     property input: TInputComponent read FInput write FInput;
     property movement: TMovementComponent read FMovement write FMovement;
     property collide: TCollideComponent read FCollide write FCollide;
+    property depth: TDepthComponent read FDepth write FDepth;
     property id: integer read nid;
     property tag: string read FTag write FTag;
     property zindex: integer read FZIndex write FZIndex;
+    property group: TStringList read FGroup write FGroup;
     function GetBoundigRect: RRect;
     function GetPrevBoundingRect: RRect;
     function setNid(AId: integer): integer;
+    procedure AddToGroup(groupName: string);
+    procedure RemoveFromGroup(groupName: string);
   end;
 
 
@@ -47,19 +55,20 @@ uses  physics_util;
 constructor TEntity.Create;
 begin
   FIsAlive := True;
+  FGroup := TStringList.Create;
 end;
 
 destructor TEntity.Destroy;
 begin
   if Assigned(FPosition) then
   begin
-    LogDebug('Remove Position Component');
+    LogDebug(Format('Remove Position Component : %s', [FPosition.id]));
     FreeAndNil(FPosition);
   end;
 
   if Assigned(FAnimation) then
   begin
-    LogDebug('Remove Animation Component');
+    LogDebug(Format('Remove Animation Component : %s', [FAnimation.id]));
     FreeAndNil(FAnimation);
   end;
 
@@ -77,6 +86,15 @@ begin
   begin
     FreeAndNil(FCollide);
   end;
+
+
+  If Assigned(FDepth) Then
+  begin
+    FreeAndNil(FDepth);
+  end;
+  FreeAndNil(FGroup);
+
+  LogDebug(Format('Entity Destoryed : %3d' , [nid] ));
 end;
 
 function TEntity.GetBoundigRect: RRect;
@@ -99,6 +117,19 @@ function TEntity.setNid(AId: integer): integer;
 begin
   Self.nid := AId;
   Result := Self.nid;
+end;
+
+procedure TEntity.AddToGroup(groupName: string);
+begin
+  FGroup.Add(groupName);
+end;
+
+procedure TEntity.RemoveFromGroup(groupName: string);
+var
+  pos: integer;
+begin
+  if FGroup.Find(groupName, pos) then
+    FGroup.Delete(pos);
 end;
 
 end.

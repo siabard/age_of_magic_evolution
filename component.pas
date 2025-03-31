@@ -5,7 +5,7 @@ unit component;
 interface
 
 uses
-  Classes, SysUtils, LogUtil, Generics.Collections, animation, game_types;
+  Classes, SysUtils, Generics.Collections, animation, game_types;
 
 type
 
@@ -62,6 +62,18 @@ type
     property Animations: specialize THashMap<string, TAnimation> read FAnimations;
   end;
 
+
+  { TDepthComponent }
+
+  TDepthComponent = class(TComponent)
+    private
+      FDepth: Integer;
+    public
+      constructor Create(cid: string);
+      destructor Destroy; override;
+      property depth: Integer read FDepth write FDepth;
+  end;
+
   TMovementComponent = class(TComponent)
   private
     DX: integer;
@@ -100,6 +112,9 @@ type
 
 implementation
 
+uses
+  LogUtil;
+
 constructor TComponent.Create(cid: string);
 begin
   Self.Fid := cid;
@@ -128,13 +143,14 @@ end;
 constructor TAnimationComponent.Create(cid: string);
 begin
   inherited;
+  LogDebug(Format('%s : animation component created', [cid]));
   FAnimations := specialize THashMap<string, TAnimation>.Create;
 end;
 
 destructor TAnimationComponent.Destroy;
 begin
 
-  LogDebug('TAnimationComponent.Destroy');
+  LogDebug(Format('TAnimationComponent.Destroy : %s', [Self.Fid]));
   FAnimations.Free;
   inherited;
 end;
@@ -163,6 +179,20 @@ procedure TAnimationComponent.SetAnimation(animationKey: string;
   animationValue: TAnimation);
 begin
   FAnimations.Add(animationKey, animationValue);
+  FCurrentAnimation := animationKey;
+end;
+
+{ TDepthComponent }
+
+constructor TDepthComponent.Create(cid: string);
+begin
+  inherited;
+  FDepth := 0;
+end;
+
+destructor TDepthComponent.Destroy;
+begin
+  inherited Destroy;
 end;
 
 constructor TMovementComponent.Create(cid: string);
