@@ -95,6 +95,8 @@ begin
   inherited;
 end;
 
+
+
 procedure TScene.SceneInit(APath: string);
 var
   AEntity: TEntity;
@@ -118,7 +120,7 @@ var
   ATileset: RTileset;
   TilesetName: string;
   AHashMapKey: integer;
-  ValDepth: Integer;
+  ValDepth: integer;
 
   { Layer 엔터티 생성용 }
   ALayer: RLayer;
@@ -266,13 +268,17 @@ begin
                     end;
                   end;
                   'depth': begin
-                    If NOT Assigned(AEntity.Depth) Then
-                    begin
-                      ADepthComponent := TDepthComponent.Create(Format('%s_%s_%s', ['depth', Fields[2], Fields[4]] ));
-                      Val(Fields[4], ValDepth, ValCode);
-                      ADepthComponent.depth:= ValDepth;
-                      AEntity.depth := ADepthComponent;
-                    end;
+                    if not Assigned(AEntity.Depth) then
+
+                      ADepthComponent :=
+                        TDepthComponent.Create(Format('%s_%s_%s', ['depth', Fields[2], Fields[4]]))
+                    else
+                      ADepthComponent := AEntity.Depth;
+
+                    Val(Fields[4], ValDepth, ValCode);
+                    ADepthComponent.depth := ValDepth;
+                    AEntity.depth := ADepthComponent;
+
                   end;
                 end;
               end;
@@ -297,8 +303,6 @@ begin
             Self.FTileMap.Add(TilemapName, ATilemap);
 
             // 타일셋과 아틀라스를 등록한다.
-
-            WriteLn('Register Tilesets');
             for ATileset in ATileMap.FTilesets do
             begin
               // 개별 타일셋에서 AtlasId 와 TextureId 는 동일하다.
@@ -343,6 +347,7 @@ begin
                 if LayerGid > 0 then
                 begin
                   LEntity := FEntityManager.AddEntity(LGroupName);
+                  LEntity.Tag := LGroupName;
                   TI := getTilesetIndex(ATileMap.FTilesets, LayerGid);
                   firstgid := ATileMap.FTilesets[TI].firstgid;
                   // RenderSystem을 참고해서 필요 Component 들을 만든다. (Animation / Position)
@@ -366,6 +371,7 @@ begin
                     [ATileMap.FTilesets[TI].tilesetname, LayerGid - firstgid]),
                     AAnimation);
                   ACompAnim.Duration := 300;
+                  LEntity.depth := ADepthComponent;
                   LEntity.animation := ACompAnim;
                   LEntity.position := ACompPos;
                 end;

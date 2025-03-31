@@ -5,10 +5,13 @@ unit entity_manager;
 interface
 
 uses
-  Classes, SysUtils, entity, Generics.Collections, LogUtil;
+  Classes, SysUtils, entity, Generics.Collections, Generics.Defaults, LogUtil;
 
 type
   TListEntity = specialize TList<TEntity>;
+
+  generic TComparisonFunc<T> = function(constref Left, Right: T): integer;
+
 
   { TEntityManager }
 
@@ -18,6 +21,7 @@ type
     FAddedEntities: specialize TList<TEntity>;
     FEntityGroups: specialize THashMap<string, specialize TList<TEntity>>;
     entity_id: integer;
+    FEntityComparer: specialize IComparer<TEntity>;
   public
     constructor Create;
     destructor Destroy; override;
@@ -26,12 +30,15 @@ type
     function GetEntities: specialize TList<TEntity>;
     function GetEntity(ATag: string): TEntity;
     function GetEntityGroup(groupname: string): TListEntity;
+    property EntityComparer: specialize IComparer<TEntity> read FEntityComparer;
   end;
+
 
 implementation
 
 constructor TEntityManager.Create;
 begin
+  FEntityComparer := specialize TComparer<TEntity>.Construct(@CompareEntities);
   FEntities := specialize TList<TEntity>.Create;
   FAddedEntities := specialize TList<TEntity>.Create;
   FEntityGroups := specialize THashMap<string, TListEntity>.Create;
@@ -80,13 +87,13 @@ begin
   FAddedEntities.Add(AEntity);
 
 
-  If NOT FEntityGroups.ContainsKey(groupName) Then
+  if not FEntityGroups.ContainsKey(groupName) then
   begin
     AListEntity := TListEntity.Create;
     FEntityGroups.Add(groupName, AListEntity);
   end
   else
-      FEntityGroups.TryGetValue(groupName, AListEntity);
+    FEntityGroups.TryGetValue(groupName, AListEntity);
   AListEntity.Add(AEntity);
 
   Result := AEntity;
@@ -120,6 +127,7 @@ begin
   end;
 
   FEntities := SubEntities;
+  FEntities.Sort(FEntityComparer);
   FAddedEntities.Clear;
 
 end;

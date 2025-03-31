@@ -36,6 +36,7 @@ uses
   game_types,
   physics_util,
   xml_reader,
+  Generics.Defaults,
   Generics.Collections;
 
 constructor TSceneMap.Create(AM: TAssetManager; AR: PSDL_Renderer; AK: TKeyInput);
@@ -170,9 +171,9 @@ begin
   Self.RenderSystem;
 
   { 기타 정보창은 모든 렌더링 이후에 진행 }
-  FTextBox.DrawPanel(FRenderer);
+  //FTextBox.DrawPanel(FRenderer);
 
-  FTextBox.Draw(FRenderer);
+  //FTextBox.Draw(FRenderer);
 
 
   SDL_RenderPresent(FRenderer);
@@ -291,9 +292,15 @@ begin
   for I := 0 to AEntities.Count - 1 do
   begin
     AEntity := AEntities[I];
-
     if Assigned(AEntity.animation) and Assigned(AEntity.position) then
     begin
+
+      {
+      if Assigned(Aentity.depth) then
+        WriteLn('Depth : ', AEntity.tag, ' -- ', AEntity.depth.depth)
+      else
+        WriteLn('No Depth ', AEntity.tag);
+      }
       // 출력할 위치
       // 현재 애니메이션의 Rect 값
       // 애니메이션의 텍스쳐 값

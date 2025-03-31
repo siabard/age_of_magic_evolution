@@ -47,10 +47,36 @@ type
   end;
 
 
+function CompareEntities(constref Entity1, Entity2: TEntity): integer;
+
 
 implementation
 
-uses  physics_util;
+function CompareEntities(constref Entity1, Entity2: TEntity): integer;
+begin
+  // Depth와 Position을 가진 항목을 우선한다.
+
+  if Assigned(Entity1.position) and Assigned(Entity1.depth) and
+    Assigned(Entity2.position) and Assigned(Entity2.depth) then
+  begin
+    if (Entity1.depth.depth < Entity2.depth.depth) or
+      ((Entity1.depth.depth = Entity2.depth.depth) and
+      (Entity1.position.Y > Entity2.position.Y)) then
+      Result := -1
+    else if (Entity1.depth.depth > Entity2.Depth.depth) or
+      ((Entity1.depth.depth = Entity2.depth.depth) and
+      (Entity1.position.Y < Entity2.position.Y)) then
+      Result := 1
+    else
+      Result := 0;
+  end
+  else if Assigned(Entity1.position) and Assigned(Entity1.Depth) then
+    Result := -1
+  else if Assigned(Entity2.position) and Assigned(Entity2.Depth) then
+    Result := 1
+  else
+    Result := 0;
+end;
 
 constructor TEntity.Create;
 begin
@@ -88,13 +114,13 @@ begin
   end;
 
 
-  If Assigned(FDepth) Then
+  if Assigned(FDepth) then
   begin
     FreeAndNil(FDepth);
   end;
   FreeAndNil(FGroup);
 
-  LogDebug(Format('Entity Destoryed : %3d' , [nid] ));
+  LogDebug(Format('Entity Destoryed : %3d', [nid]));
 end;
 
 function TEntity.GetBoundigRect: RRect;
