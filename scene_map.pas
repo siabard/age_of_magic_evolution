@@ -171,9 +171,9 @@ begin
   Self.RenderSystem;
 
   { 기타 정보창은 모든 렌더링 이후에 진행 }
-  //FTextBox.DrawPanel(FRenderer);
+  FTextBox.DrawPanel(FRenderer);
 
-  //FTextBox.Draw(FRenderer);
+  FTextBox.Draw(FRenderer);
 
 
   SDL_RenderPresent(FRenderer);
@@ -490,10 +490,10 @@ begin
   begin
     Player := Entities[I];
 
+    { 충돌, 위치 컴포넌트가 없는 경우는 충돌 체크하지 않는다.}
     if (Player.collide = nil) or (player.position = nil) then
       continue;
-    Position := Player.position;
-    for J := I + 1 to Entities.Count - 1 do
+    for J := 0 to Entities.Count - 1 do
 
       if I <> J then
       begin
@@ -504,6 +504,17 @@ begin
         begin
           CollDir := CollideDirection(Player, Collider);
           CollAmount := OverlapAmount(Player.GetBoundigRect, Collider.GetBoundigRect);
+
+          { 두 물체가 충돌했을 때 이동 컴포넌트의 상황에 맞추어 위치를 결정한다. }
+          if (Player.movement <> nil) and ((Player.movement.X <> 0) or
+            (Player.movement.Y <> 0)) then
+            Position := Player.position
+          else if (Collider.movement <> nil) and
+            ((Collider.movement.X <> 0) or (Collider.movement.Y <> 0)) then
+            Position := Collider.position;
+
+
+
 
           if (CollAmount.Rx > 0) and (CollAmount.RY > 0) then
           begin
