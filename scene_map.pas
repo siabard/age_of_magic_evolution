@@ -171,9 +171,8 @@ begin
   Self.RenderSystem;
 
   { 기타 정보창은 모든 렌더링 이후에 진행 }
-  //FTextBox.DrawPanel(FRenderer);
-
-  //FTextBox.Draw(FRenderer);
+  FTextBox.DrawPanel(FRenderer);
+  FTextBox.Draw(FRenderer);
 
 
   SDL_RenderPresent(FRenderer);
