@@ -340,27 +340,31 @@ begin
           if DstRect.X >= FCamera.GetRect.RX then
           begin
             SrcRect.x := AnimRect.RX;
+            DstRect.x := (APosComp.x - FCamera.GetRect.RX);
           end
           else
           begin
-            SrcRect.x := AnimRect.RX + (AnimRect.RW - CameraClip.RX);
+            SrcRect.x := AnimRect.RX + (AnimRect.RW - CameraClip.RW);
+            DstRect.x := APosComp.x + (AnimRect.RW - CameraClip.RW) - FCamera.GetRect.RX;
           end;
 
           if DstRect.Y >= FCamera.GetRect.RY then
           begin
             SrcRect.Y := AnimRect.RY;
+            DstRect.y := (APosComp.y - FCamera.GetRect.RY);
           end
           else
           begin
             SrcRect.Y := AnimRect.RY + (AnimRect.RH - CameraClip.RH);
+            DstRect.y := APosComp.y + (AnimRect.RH - CameraClip.RH) - FCamera.GetRect.RY;
           end;
 
 
           SrcRect.w := CameraClip.RW;
           SrcRect.h := CameraClip.RH;
 
-          DstRect.x := (APosComp.x - FCamera.GetRect.RX);
-          DstRect.y := (APosComp.y - FCamera.GetRect.RY);
+
+
           DstRect.w := CameraClip.RW;
           DstRect.h := CameraClip.RH;
           // 텍스쳐

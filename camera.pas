@@ -63,36 +63,63 @@ end;
 }
 procedure TCamera.Follow(PosX, PosY: Integer; VDir, HDir: TDirection);
 begin
+
+  {
   WriteLn('Camera check ');
   WriteLn(Format(' For X : %d, Y : %d ', [PosX, PosY]));
   WriteLn(VDir, HDir);
   WriteLn(Format(' Camera WH W : %d, H : %d ', [FW, FH]));
+  }
   case VDir of
     dirUp: FTargetY := Min(FMaxY - FH, Max(0, PosY - Round(0.6 * FH)));
     dirDown: FTargetY := Max(0, Min(FMaxY - FH, PosY - Round(0.4 * FH)));
-    else FTargetY := PosY;
   end;
 
   case HDir of
     dirLeft: FTargetX := Min(FMaxX - FW, Max(0, PosX - Round(0.6 * FW)));
     dirRight: FTargetX := Max(0, Min(FMaxX - FW, PosX - Round(0.4 * FW)));
-    else FTargetX := PosX;
   end;
-
+  {
+  WriteLn(Format(' CAMERA X : %d, Y : %d ', [FX, FY]));
   WriteLn(Format(' TARGET X : %d, Y : %d ', [FTargetX, FTargetY]));
+  }
 end;
 
 procedure TCamera.Update(DT: Real);
 var
   DeltaX, DeltaY: Integer;
+  FDX, FDY: Real;
 begin
   DeltaX := FX - FTargetX;
   DeltaY := FY - FTargetY;
 
   if (FX <> FTargetX) or (FY <> FTargetY) then
   begin
-    FX := Round(FX - (DeltaX * DT));
-    FY := Round(FY - (DeltaY * DT));
+    {
+    WriteLn('Dt : ', DT);
+    WriteLn('DELTAX: ', DeltaX * DT);
+    WriteLn('DELTAY: ', DeltaY * DT);
+    }
+
+    FDX := DeltaX * DT;
+    FDY := DeltaY * DT;
+
+    IF Abs(FDX) < 1.0 Then
+       FDX := 1.0 * Sign(FDX);
+
+    If Abs(FDY) < 1.0 Then
+       FDY := 1.0 * Sign(FDY);
+
+
+
+    FX := Round(FX - FDX);
+    FY := Round(FY - FDY);
+
+    If Abs(FX - FTargetX) < 1 Then
+       FX := FTargetX;
+
+    If Abs(FY - FTargetY) < 1 Then
+       FY := FTargetY;
   end;
 end;
 
