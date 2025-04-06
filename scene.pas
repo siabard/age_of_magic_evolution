@@ -50,7 +50,9 @@ begin
   FRenderer := AR;
   FSceneType := void_scene;
   FEntityManager := TEntityManager.Create;
-  FCamera := TCamera.Create('main_camera', 0, 0, 320, 400);
+  FCamera := TCamera.Create('main_camera', 0, 0, 640, 480);
+  FCamera.MaxX := 1280;
+  FCamera.MaxY := 960;
   FActionMap := specialize THashMap<integer, EActionName>.Create;
   if Assigned(AK) then
     FKeyInput := AK;

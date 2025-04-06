@@ -10,6 +10,8 @@ uses
 type
 
 
+  { TSceneMap }
+
   TSceneMap = class(TScene)
   protected
     FTextBox: TTextBox;
@@ -21,6 +23,7 @@ type
     procedure SceneRender;
     procedure AnimationSystem(dt: real);
     procedure RenderSystem;
+    procedure CameraSystem(dt: real);
     procedure DoAction(ACode: integer; AAct: EActionType); override;
     procedure InputSystem;
     procedure MovementSystem(dt: real);
@@ -33,6 +36,7 @@ uses
   atlas,
   component,
   animation,
+  camera,
   game_types,
   physics_util,
   xml_reader,
@@ -151,6 +155,7 @@ begin
 
   InputSystem;
   MovementSystem(dt);
+  CameraSystem(dt);
   AnimationSystem(dt);
   CollisionSystem;
 
@@ -374,6 +379,45 @@ begin
 
     end;
   end;
+end;
+
+procedure TSceneMap.CameraSystem(dt: real);
+var
+  player: TEntity;
+  PosX, PosY: integer;
+  HDir: TDirection;
+  VDir: TDirection;
+begin
+
+  player := FEntityManager.GetEntity('player');
+
+  if Assigned(player.position) then
+  begin
+    PosX := player.position.X;
+    PosY := player.position.Y;
+  end;
+
+
+  if Assigned(player.input) then
+  begin
+    if player.input.down = True then
+      VDIR := dirDown
+    else if player.input.up = True then
+      VDIR := dirUp
+    else
+      VDIR := dirNone;
+
+    if player.input.left = True then
+      HDir := dirLeft
+    else if player.input.right = True then
+      HDir := dirRight
+    else
+      HDir := dirNone;
+  end;
+
+  FCamera.Follow(PosX, PosY, VDir, HDir);
+  FCamera.Update(dt);
+
 end;
 
 procedure TSceneMap.DoAction(ACode: integer; AAct: EActionType);

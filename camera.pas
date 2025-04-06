@@ -44,8 +44,9 @@ begin
   FTargetY := AY;
   FW := AW;
   FH := AH;
-  FMaxX := 0;
-  FMaxY := 0;
+  { 기본 카메라가 표시하는 전체 영역은 기본 가로, 세로의 두 배 }
+  FMaxX := FW * 2;
+  FMaxY := FH * 2;
 end;
 
 function TCamera.GetRect: RRect;
@@ -56,8 +57,16 @@ begin
   Result.RH := FY + FH;
 end;
 
+{
+    Camera는 대상 X, y위치를 가로, 세로를 보는 방향에 맞추어 움직인다.
+
+}
 procedure TCamera.Follow(PosX, PosY: Integer; VDir, HDir: TDirection);
 begin
+  WriteLn('Camera check ');
+  WriteLn(Format(' For X : %d, Y : %d ', [PosX, PosY]));
+  WriteLn(VDir, HDir);
+  WriteLn(Format(' Camera WH W : %d, H : %d ', [FW, FH]));
   case VDir of
     dirUp: FTargetY := Min(FMaxY - FH, Max(0, PosY - Round(0.6 * FH)));
     dirDown: FTargetY := Max(0, Min(FMaxY - FH, PosY - Round(0.4 * FH)));
@@ -69,6 +78,8 @@ begin
     dirRight: FTargetX := Max(0, Min(FMaxX - FW, PosX - Round(0.4 * FW)));
     else FTargetX := PosX;
   end;
+
+  WriteLn(Format(' TARGET X : %d, Y : %d ', [FTargetX, FTargetY]));
 end;
 
 procedure TCamera.Update(DT: Real);
