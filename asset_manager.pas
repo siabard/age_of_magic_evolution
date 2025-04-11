@@ -7,7 +7,7 @@ interface
 
 uses
   Classes, SysUtils, sdl2, sdl2_image,
-  Generics.Collections, LogUtil, animation, atlas;
+  Generics.Collections, LogUtil, animation, atlas, story_engine;
 
 type
 

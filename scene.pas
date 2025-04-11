@@ -6,7 +6,7 @@ interface
 
 uses
   Classes, SysUtils, asset_manager, sdl2, entity_manager, entity, Generics.Collections,
-  camera, KeyInput, xml_reader;
+  camera, KeyInput, xml_reader, story_engine;
 
 type
 
@@ -25,6 +25,7 @@ type
     FActionMap: specialize THashMap<integer, EActionName>;
     FTileMap: specialize THashMap<string, RTilemap>;
     FCurrentSceneName: string;
+    FStorySystems: specialize THashMap<string, TStorySystems>;
   public
     constructor Create(AM: TAssetManager; AR: PSDL_Renderer; AK: TKeyInput);
     destructor Destroy; override;
@@ -57,6 +58,7 @@ begin
   if Assigned(AK) then
     FKeyInput := AK;
   FTileMap := specialize THashMap<string, RTilemap>.Create;
+  FStorySystems := specialize THashmap<string, TStorySystems>.Create;
 end;
 
 
@@ -67,6 +69,7 @@ var
   TilesetName: string;
   AEntity: TEntity;
   AListEntity: TListEntity;
+  AStorySystem: TStorySystems;
   I: integer;
 begin
 
@@ -94,6 +97,13 @@ begin
   FEntityManager.Free;
   FCamera.Free;
   FActionMap.Free;
+
+  { Story 삭제 }
+  for AStorySystem in FStorySystems.Values do
+  begin
+    AStorySystem.Free;
+  end;
+  FStorySystems.Free;
   inherited;
 end;
 
@@ -139,6 +149,9 @@ var
   LAtlas: TAtlas;
   AI: integer;
   firstgid: integer;
+
+  { Story 등록용 }
+  AStorySystem: TStorySystems;
 begin
   { APath에서 설정파일을 읽어 Scene 에 Entity 등을 구성한다. }
   Fields := TStringList.Create;
@@ -273,7 +286,8 @@ begin
                     if not Assigned(AEntity.Depth) then
 
                       ADepthComponent :=
-                        TDepthComponent.Create(Format('%s_%s_%s', ['depth', Fields[2], Fields[4]]))
+                        TDepthComponent.Create(Format('%s_%s_%s',
+                        ['depth', Fields[2], Fields[4]]))
                     else
                       ADepthComponent := AEntity.Depth;
 
@@ -382,6 +396,12 @@ begin
 
             FEntityManager.Update;
 
+          end;
+          'story': begin
+
+            AStorySystem := TStorySystems.Create;
+            AStorySystem.ParseStoryFile(Fields[2]);
+            FStorySystems.Add(Fields[1], AStorySystem);
           end;
         end;
       end;

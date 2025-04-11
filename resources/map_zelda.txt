@@ -30,3 +30,7 @@ set entity block collision 0 0 16 16
 # Map: map [map name] [map path]
 map scene_1 resources/test.xml
 set map scene_1
+
+
+# Story: story [story name] [story path]
+story sample resources/sample.story
