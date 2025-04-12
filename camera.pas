@@ -5,37 +5,40 @@ unit camera;
 interface
 
 uses
-  Classes, SysUtils, Math, game_types;
+  Classes, SysUtils, Math, game_types, tilemap;
 
 type
   TDirection = (dirNone, dirUp, dirDown, dirLeft, dirRight);
 
+  { TCamera }
+
   TCamera = class
   private
     FName: string;
-    FX, FY: Integer;
-    FTargetX, FTargetY: Integer;
-    FMaxX, FMaxY: Integer;
-    FW, FH: Integer;
+    FX, FY: integer;
+    FTargetX, FTargetY: integer;
+    FMaxX, FMaxY: integer;
+    FW, FH: integer;
   public
-    constructor Create(AName: string; AX, AY, AW, AH: Integer);
+    constructor Create(AName: string; AX, AY, AW, AH: integer);
     function GetRect: RRect;
-    procedure Follow(PosX, PosY: Integer; VDir, HDir: TDirection);
-    procedure Update(DT: Real);
+    procedure Follow(PosX, PosY: integer; VDir, HDir: TDirection);
+    procedure Update(DT: real);
     property Name: string read FName write FName;
-    property X: Integer read FX write FX;
-    property Y: Integer read FY write FY;
-    property TargetX: Integer read FTargetX write FTargetX;
-    property TargetY: Integer read FTargetY write FTargetY;
-    property MaxX: Integer read FMaxX write FMaxX;
-    property MaxY: Integer read FMaxY write FMaxY;
-    property W: Integer read FW write FW;
-    property H: Integer read FH write FH;
+    property X: integer read FX write FX;
+    property Y: integer read FY write FY;
+    property TargetX: integer read FTargetX write FTargetX;
+    property TargetY: integer read FTargetY write FTargetY;
+    property MaxX: integer read FMaxX write FMaxX;
+    property MaxY: integer read FMaxY write FMaxY;
+    property W: integer read FW write FW;
+    property H: integer read FH write FH;
+    procedure Teleport(Map: RTilemap; Mx: integer; My: integer);
   end;
 
 implementation
 
-constructor TCamera.Create(AName: string; AX, AY, AW, AH: Integer);
+constructor TCamera.Create(AName: string; AX, AY, AW, AH: integer);
 begin
   FName := AName;
   FX := AX;
@@ -61,7 +64,7 @@ end;
     Camera는 대상 X, y위치를 가로, 세로를 보는 방향에 맞추어 움직인다.
 
 }
-procedure TCamera.Follow(PosX, PosY: Integer; VDir, HDir: TDirection);
+procedure TCamera.Follow(PosX, PosY: integer; VDir, HDir: TDirection);
 begin
 
   {
@@ -85,10 +88,10 @@ begin
   }
 end;
 
-procedure TCamera.Update(DT: Real);
+procedure TCamera.Update(DT: real);
 var
-  DeltaX, DeltaY: Integer;
-  FDX, FDY: Real;
+  DeltaX, DeltaY: integer;
+  FDX, FDY: real;
 begin
   DeltaX := FX - FTargetX;
   DeltaY := FY - FTargetY;
@@ -104,24 +107,36 @@ begin
     FDX := DeltaX * DT;
     FDY := DeltaY * DT;
 
-    IF Abs(FDX) < 1.0 Then
-       FDX := 1.0 * Sign(FDX);
+    if Abs(FDX) < 1.0 then
+      FDX := 1.0 * Sign(FDX);
 
-    If Abs(FDY) < 1.0 Then
-       FDY := 1.0 * Sign(FDY);
+    if Abs(FDY) < 1.0 then
+      FDY := 1.0 * Sign(FDY);
 
 
 
     FX := Round(FX - FDX);
     FY := Round(FY - FDY);
 
-    If Abs(FX - FTargetX) < 1 Then
-       FX := FTargetX;
+    if Abs(FX - FTargetX) < 1 then
+      FX := FTargetX;
 
-    If Abs(FY - FTargetY) < 1 Then
-       FY := FTargetY;
+    if Abs(FY - FTargetY) < 1 then
+      FY := FTargetY;
   end;
 end;
 
-end.
+procedure TCamera.Teleport(Map: RTilemap; Mx: integer; My: integer);
+var
+  Target: RVec2;
+begin
+  Target := GetTilePos(Map, Mx, My);
+  Self.X := Max(0, Target.RX - Floor(Self.FW / 2));
+  Self.Y := Max(0, Target.RY - Floor(Self.FH / 2));
+  Self.TargetX := Self.X;
+  Self.TargetY := Self.Y;
+end;
 
+
+
+end.

@@ -1,4 +1,4 @@
-unit xml_reader;
+unit tilemap;
 {$mode objfpc}
 
 {
@@ -35,6 +35,7 @@ uses
   types,
   DOM,
   XMLRead,
+  game_types,
   Generics.Collections;
 
 type
@@ -72,7 +73,9 @@ function AnalyzeLayer(IOrder: integer; LayerNode: TDOMNode): RLayer;
 procedure DebugLayer(ALayer: RLayer);
 function ParseTileset(APath: string): RTileset;
 function ParseTilemap(APath: string): RTilemap;
-function getTilesetIndex(Tilesets: specialize TList<RTileset>; gid: Integer): integer;
+function getTilesetIndex(Tilesets: specialize TList<RTileset>; gid: integer): integer;
+function GetTilePos(map: RTilemap; x: integer; y: integer): RVec2;
+
 
 implementation
 
@@ -375,7 +378,7 @@ begin
   Result.FTilesets := tilesets;
 end;
 
-function getTilesetIndex(Tilesets: specialize TList<RTileset>; gid: Integer): integer;
+function getTilesetIndex(Tilesets: specialize TList<RTileset>; gid: integer): integer;
 var
   I: integer;
   ATileset: RTileset;
@@ -394,6 +397,18 @@ begin
       ;
     end;
   end;
+end;
+
+function GetTilePos(map: RTilemap; x: integer; y: integer): RVec2;
+var
+  tilewidth: integer;
+  tileheight: integer;
+begin
+  tilewidth := map.FTilesets[0].tilewidth;
+  tileheight := map.FTilesets[1].tilewidth;
+
+  Result.RX := x * tilewidth;
+  Result.RY := y * tilewidth;
 end;
 
 end.

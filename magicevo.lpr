@@ -19,9 +19,9 @@ uses
   listutil,
   atlas,
   game_types,
-  xml_reader,
+  tilemap,
   entity_manager,
-  physics_util;
+  physics_util, story_engine;
 
 var
   AEngine: TEngine;

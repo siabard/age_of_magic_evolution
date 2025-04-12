@@ -5,7 +5,7 @@ unit entity;
 interface
 
 uses
-  Classes, SysUtils, LogUtil, component, game_types;
+  Classes, SysUtils, LogUtil, component, game_types, tilemap;
 
 type
 
@@ -44,6 +44,7 @@ type
     function setNid(AId: integer): integer;
     procedure AddToGroup(groupName: string);
     procedure RemoveFromGroup(groupName: string);
+    procedure Teleport(Map: RTilemap; MX: integer; MY: integer);
   end;
 
 
@@ -156,6 +157,19 @@ var
 begin
   if FGroup.Find(groupName, pos) then
     FGroup.Delete(pos);
+end;
+
+procedure TEntity.Teleport(Map: RTilemap; MX: integer; MY: integer);
+var
+  Target: RVec2;
+begin
+  Target := GetTilePos(Map, MX, MY);
+  If Assigned(Self.position) Then
+  begin
+    Self.position.X := Target.RX;
+    Self.position.Y := Target.RY;
+  end;
+
 end;
 
 end.

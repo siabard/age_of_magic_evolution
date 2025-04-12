@@ -39,7 +39,7 @@ uses
   camera,
   game_types,
   physics_util,
-  xml_reader,
+  tilemap,
   Generics.Defaults,
   Generics.Collections;
 
@@ -132,6 +132,7 @@ begin
   Self.RegisterAction(SDLK_DOWN, move_down);
   Self.RegisterAction(SDLK_LEFT, move_left);
   Self.RegisterAction(SDLK_RIGHT, move_right);
+  Self.RegisterAction(SDLK_SPACE, move_teleport);
 end;
 
 destructor TSceneMap.Destroy;
@@ -395,6 +396,11 @@ begin
 
   player := FEntityManager.GetEntity('player');
 
+  PosX := 0;
+  PosY := 0;
+  VDIR := dirNone;
+  HDir := dirNone;
+
   if Assigned(player.position) then
   begin
     PosX := player.position.X;
@@ -419,6 +425,7 @@ begin
       HDir := dirNone;
   end;
 
+
   FCamera.Follow(PosX, PosY, VDir, HDir);
   FCamera.Update(dt);
 
@@ -430,6 +437,7 @@ var
   AEntities: specialize TList<TEntity>;
   AEntity: TEntity;
   I: integer;
+  CurrentMap: RTilemap;
 begin
   AEntities := FEntityManager.GetEntities;
   if FActionMap.TryGetValue(ACode, tmpAct) then
@@ -460,6 +468,16 @@ begin
             move_up: AEntity.input.up := False;
             move_left: AEntity.input.left := False;
             move_right: AEntity.input.right := False;
+            move_teleport: begin
+              // 30, 30 위치로 옮긴다.
+              AEntity := EntityManager.GetEntity('player');
+
+              FTileMap.TryGetValue('scene_1', CurrentMap);
+              AEntity.Teleport(CurrentMap, 30, 30);
+
+              FCamera.Teleport(CurrentMap, 30, 30);
+
+            end;
           end;
 
       end;

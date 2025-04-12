@@ -8,7 +8,7 @@ interface
 uses
   Classes, SysUtils, Sdl2, asset_manager, entity, component, LogUtil,
   textbox, Generics.Collections, scene, KeyInput, scene_map, atlas,
-  animation, game_types;
+  animation, game_types, story_engine;
 
 type
   TEngine = class

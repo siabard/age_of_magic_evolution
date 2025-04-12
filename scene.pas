@@ -6,11 +6,11 @@ interface
 
 uses
   Classes, SysUtils, asset_manager, sdl2, entity_manager, entity, Generics.Collections,
-  camera, KeyInput, xml_reader, story_engine;
+  camera, KeyInput, tilemap, story_engine;
 
 type
 
-  EActionName = (move_left, move_right, move_up, move_down);
+  EActionName = (move_left, move_right, move_up, move_down, move_teleport);
   EActionType = (action_start, action_stop);
   ESceneType = (void_scene, title_scene, map_scene, battle_scene, end_scene);
 
@@ -313,7 +313,7 @@ begin
               이후에 Map에 대한 Entity조작이 안정화되면 삭제한다.
             }
             // 지도를 읽는다.
-            ATilemap := xml_reader.ParseTilemap(Fields[2]);
+            ATilemap := tilemap.ParseTilemap(Fields[2]);
             TilemapName := Fields[1];
 
             Self.FTileMap.Add(TilemapName, ATilemap);
