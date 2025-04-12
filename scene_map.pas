@@ -52,6 +52,7 @@ var
   AInput: TInputComponent;
   AMovement: TMovementComponent;
   ACollider: TCollideComponent;
+  ATeleport: TTeleportComponent;
   DefaultCollider: RRect;
 begin
   inherited;
@@ -126,6 +127,38 @@ begin
   AEntity.position := APosComp;
   AEntity.collide := ACollider;
   }
+
+
+  { 충돌용 엔터티 (텔레포트 ) 만들어보기 }
+  {
+  AEntity := FEntityManager.AddEntity();
+  APosComp := TPositionComponent.Create('teleport pos');
+  APosComp.X := 62;
+  APosComp.Y := 66;
+  APosComp.PX := 62;
+  APosComp.PY := 66;
+  with DefaultCollider do
+  begin
+    RX := 0;
+    RY := 0;
+    RW := 16;
+    RH := 16;
+  end;
+  ACollider := TCollideComponent.Create('teleport bound');
+  ACollider.BoundBox := DefaultCollider;
+
+  ATeleport := TTeleportComponent.Create('teleport comp');
+  with ATeleport.Pos do
+  begin
+    RX := 12;
+    RY := 12;
+  end;
+
+  AEntity.position := APosComp;
+  AEntity.collide := ACollider;
+  AEntity.teleporter := ATeleport;
+  }
+
 
   { Action 설정 }
   Self.RegisterAction(SDLK_UP, move_up);
@@ -247,7 +280,7 @@ begin
   {
   // Tile 출력해보기
   // 레이어의 가로와 세로는 ATilemap 에 들어있음.
-  if FTileMap.TryGetValue(FCurrentSceneName, ATileMap) then
+  if FTileMap.TryGetValue(FMapName, ATileMap) then
   begin
     for I := 0 to ATileMap.FLayers.Count - 1 do
     begin
@@ -472,7 +505,7 @@ begin
               // 30, 30 위치로 옮긴다.
               AEntity := EntityManager.GetEntity('player');
 
-              FTileMap.TryGetValue('scene_1', CurrentMap);
+              FTileMap.TryGetValue(FMapName, CurrentMap);
               AEntity.Teleport(CurrentMap, 30, 30);
 
               FCamera.Teleport(CurrentMap, 30, 30);
@@ -548,6 +581,7 @@ var
   Entities: specialize TList<TEntity>;
   CollDir: EDirection;
   CollAmount: RVec2;
+  CurrentMap: RTilemap;
 begin
 
   Entities := FEntityManager.GetEntities;
@@ -578,17 +612,37 @@ begin
             ((Collider.movement.X <> 0) or (Collider.movement.Y <> 0)) then
             Position := Collider.position;
 
-
-
-
           if (CollAmount.Rx > 0) and (CollAmount.RY > 0) then
           begin
-            case CollDir of
-              EDirection.dir_up: Position.Y := Position.Y + CollAmount.RY;
-              EDirection.dir_down: Position.Y := Position.Y - CollAmount.RY;
-              EDirection.dir_left: Position.X := Position.X + CollAmount.RX;
-              EDirection.dir_right: Position.X := Position.X - CollAmount.RX;
+
+            {
+            CollisionSystem 에서는 대상 Entity에 대해 다양한 행동을 한다.
+
+            }
+            if Assigned(Collider.teleporter) then
+            begin
+              { Teleport 를 만나면 순간이동 }
+              if FTileMap.TryGetValue(FMapName, CurrentMap) then
+              begin
+                Player.Teleport(CurrentMap, Collider.teleporter.Pos.RX,
+                  Collider.teleporter.Pos.RY);
+                FCamera.Teleport(CurrentMap, Collider.teleporter.Pos.RX,
+                  Collider.teleporter.Pos.RY);
+              end;
+            end
+            else
+            { 지금은 디폴트가 이동방지이지만, 나중에는
+              특정한 컴포넌트가 있을 때에만 동작해야한다.
+            }
+            begin
+              case CollDir of
+                EDirection.dir_up: Position.Y := Position.Y + CollAmount.RY;
+                EDirection.dir_down: Position.Y := Position.Y - CollAmount.RY;
+                EDirection.dir_left: Position.X := Position.X + CollAmount.RX;
+                EDirection.dir_right: Position.X := Position.X - CollAmount.RX;
+              end;
             end;
+
           end;
 
         end;

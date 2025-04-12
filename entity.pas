@@ -24,6 +24,7 @@ type
     FZIndex: integer;
     FTag: string;
     FGroup: TStringList;
+    FTeleport: TTeleportComponent;
 
   public
     constructor Create;
@@ -39,6 +40,7 @@ type
     property tag: string read FTag write FTag;
     property zindex: integer read FZIndex write FZIndex;
     property group: TStringList read FGroup write FGroup;
+    property teleporter: TTeleportComponent read FTeleport write FTeleport;
     function GetBoundigRect: RRect;
     function GetPrevBoundingRect: RRect;
     function setNid(AId: integer): integer;
@@ -114,6 +116,10 @@ begin
     FreeAndNil(FCollide);
   end;
 
+  If Assigned(FTeleport) then
+  begin
+    FreeAndNil(FTeleport);
+  end;
 
   if Assigned(FDepth) then
   begin

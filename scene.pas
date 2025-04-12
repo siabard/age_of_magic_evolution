@@ -24,7 +24,7 @@ type
     FEntityManager: TEntityManager;
     FActionMap: specialize THashMap<integer, EActionName>;
     FTileMap: specialize THashMap<string, RTilemap>;
-    FCurrentSceneName: string;
+    FMapName: string;
     FStorySystems: specialize THashMap<string, TStorySystems>;
   public
     constructor Create(AM: TAssetManager; AR: PSDL_Renderer; AK: TKeyInput);
@@ -118,7 +118,8 @@ var
   ACompPos: TPositionComponent;
   ACompAnim: TAnimationComponent;
   ACompColl: TCollideComponent;
-  ADepthComponent: TDepthComponent;
+  ACompDepth: TDepthComponent;
+  ACompTele: TTeleportComponent;
   configFile: TextFile;
   config: string;
   Fields: TStringList;
@@ -274,6 +275,22 @@ begin
                       RH := ValH;
                     end;
                   end;
+                  'teleport': begin
+                    If AEntity.teleporter = nil then
+                    begin
+                      ACompTele := TTeleportComponent.Create(Format('%s_%s', ['teleport', Fields[2]]));
+                      Val(Fields[4], ValX, ValCode);
+                      Val(Fields[5], ValY, ValCode);
+                      With ACompTele.pos do
+                      begin
+                        RX := ValX;
+                        RY := ValY;
+                        WriteLn(Format('RX : %d, RY: %d ', [RX, RY]));
+                      end;
+
+                      AEntity.teleporter := ACompTele;
+                    end;
+                  end;
                   'input': begin
                     if AEntity.input = nil then
                     begin
@@ -285,21 +302,21 @@ begin
                   'depth': begin
                     if not Assigned(AEntity.Depth) then
 
-                      ADepthComponent :=
+                      ACompDepth :=
                         TDepthComponent.Create(Format('%s_%s_%s',
                         ['depth', Fields[2], Fields[4]]))
                     else
-                      ADepthComponent := AEntity.Depth;
+                      ACompDepth := AEntity.Depth;
 
                     Val(Fields[4], ValDepth, ValCode);
-                    ADepthComponent.depth := ValDepth;
-                    AEntity.depth := ADepthComponent;
+                    ACompDepth.depth := ValDepth;
+                    AEntity.depth := ACompDepth;
 
                   end;
                 end;
               end;
               'map': begin
-                FCurrentSceneName := Fields[2];
+                FMapName := Fields[2];
               end;
 
             end;
@@ -367,9 +384,9 @@ begin
                   TI := getTilesetIndex(ATileMap.FTilesets, LayerGid);
                   firstgid := ATileMap.FTilesets[TI].firstgid;
                   // RenderSystem을 참고해서 필요 Component 들을 만든다. (Animation / Position)
-                  ADepthComponent :=
+                  ACompDepth :=
                     TDepthComponent.Create(Format('depth_%s_%d', [LGroupName, LCI]));
-                  ADepthComponent.depth := LI;
+                  ACompDepth.depth := LI;
                   ACompPos :=
                     TPositionComponent.Create(Format('pos_%s_%d', [LGroupName, LCI]));
                   ACompPos.X := LCol * ATileMap.FTilesets[TI].tilewidth;
@@ -387,7 +404,7 @@ begin
                     [ATileMap.FTilesets[TI].tilesetname, LayerGid - firstgid]),
                     AAnimation);
                   ACompAnim.Duration := 300;
-                  LEntity.depth := ADepthComponent;
+                  LEntity.depth := ACompDepth;
                   LEntity.animation := ACompAnim;
                   LEntity.position := ACompPos;
                 end;

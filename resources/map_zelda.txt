@@ -1,11 +1,15 @@
 # entity [entity_id]
 entity player
 entity block
+entity teleport
 
 # set entity [entity_id] movement x y
 set entity player movement 0 0
+
 # set entity [entity_id] position x y
 set entity player position 0 0
+set entity teleport position 64 64
+
 # set entity [entity_id] animation [animation_id]
 set entity player animation sword
 set entity player animation armor
@@ -16,16 +20,21 @@ set entity player current_animation sword
 set entity player input
 set entity player depth 4
 
+
 set entity block movement 0 0
 set entity block position 240 240
 set entity block animation armor
 set entity block current_animation armor
 set entity block depth 4
 
+# set entity [entity_id] teleport x y
+set entity teleport teleport 8 8
+
+
 # collision
 set entity player collision 0 0 16 16
 set entity block collision 0 0 16 16
-
+set entity teleport collision 0 0 16 16
 
 # Map: map [map name] [map path]
 map scene_1 resources/test.xml

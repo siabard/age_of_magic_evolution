@@ -66,12 +66,12 @@ type
   { TDepthComponent }
 
   TDepthComponent = class(TComponent)
-    private
-      FDepth: Integer;
-    public
-      constructor Create(cid: string);
-      destructor Destroy; override;
-      property depth: Integer read FDepth write FDepth;
+  private
+    FDepth: integer;
+  public
+    constructor Create(cid: string);
+    destructor Destroy; override;
+    property depth: integer read FDepth write FDepth;
   end;
 
   TMovementComponent = class(TComponent)
@@ -108,6 +108,17 @@ type
     constructor Create(cid: string);
     destructor Destroy; override;
     property BoundBox: RRect read FBoundBox write FBoundBox;
+  end;
+
+  { TTeleportComponent }
+
+  TTeleportComponent = class(TComponent)
+  private
+    FPos: RVec2;
+  public
+    constructor Create(cid: string);
+    destructor Destroy; override;
+    property Pos: RVec2 read FPos write FPos;
   end;
 
 implementation
@@ -230,6 +241,18 @@ end;
 destructor TCollideComponent.Destroy;
 begin
   inherited;
+end;
+
+{ TTeleportComponent }
+
+constructor TTeleportComponent.Create(cid: string);
+begin
+  inherited;
+end;
+
+destructor TTeleportComponent.Destroy;
+begin
+  inherited Destroy;
 end;
 
 end.
