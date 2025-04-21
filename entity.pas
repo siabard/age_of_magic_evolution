@@ -50,12 +50,12 @@ type
   end;
 
 
-function CompareEntities(constref Entity1, Entity2: TEntity): integer;
+function CompareEntities(const Entity1, Entity2: TEntity): integer;
 
 
 implementation
 
-function CompareEntities(constref Entity1, Entity2: TEntity): integer;
+function CompareEntities(const Entity1, Entity2: TEntity): integer;
 begin
   // Depth와 Position을 가진 항목을 우선한다.
 

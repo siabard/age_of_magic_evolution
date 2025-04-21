@@ -1,6 +1,6 @@
 unit entity_manager;
 
-{$mode ObjFPC}{$H+}
+{$mode ObjFPC}{$H+}{$modeswitch functionreferences}
 
 interface
 
@@ -37,6 +37,7 @@ type
 implementation
 
 constructor TEntityManager.Create;
+
 begin
   FEntityComparer := specialize TComparer<TEntity>.Construct(@CompareEntities);
   FEntities := specialize TList<TEntity>.Create;
