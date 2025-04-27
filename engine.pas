@@ -11,13 +11,19 @@ uses
   animation, game_types, story_engine;
 
 type
+
+  { TEngine }
+
+  TSceneDictionary = specialize TDictionary<string, TScene>;
+
   TEngine = class
   private
     AWindow: PSDL_Window;
     ARenderer: PSDL_Renderer;
     Running: boolean;
     AAssetManager: TAssetManager;
-    AScenes: specialize TList<TScene>;
+    FScenes: TSceneDictionary;
+    FCurrentSceneName: string;
     AKeyInput: TKeyInput;
 
   public
@@ -61,7 +67,7 @@ begin
   AKeyInput := TKeyInput.Create;
 
   { Scene 리스트를 생성 }
-  AScenes := specialize TList<TScene>.Create;
+  FScenes := TSceneDictionary.Create;
   Running := True;
 end;
 
@@ -73,11 +79,11 @@ begin
   {---------------------------------------------------------------------------}
   { Remove All Scenes                                                         }
   {---------------------------------------------------------------------------}
-  for tmpScene in AScenes do
+  for tmpScene in FScenes.Values do
   begin
     tmpScene.Free;
   end;
-  AScenes.Free;
+  FScenes.Free;
 
   {---------------------------------------------------------------------------}
   { Gabbage Collection                                                        }
@@ -106,8 +112,8 @@ procedure TEngine.GameInit(ConfigPath: PChar);
 var
   configFile: TextFile;
   config: string;
-  Fields: TStringList;
   AScene: TScene;
+  Fields: TStringList;
   tile_width: integer;
   tile_height: integer;
   code: integer;
@@ -135,8 +141,8 @@ begin
       begin
         ReadLn(configFile, config);
 
-        If IsEmptyStr(config, []) then
-           continue;
+        if IsEmptyStr(config, []) then
+          continue;
 
         // Config를 Split 한다.
         Fields.DelimitedText := config;
@@ -168,6 +174,21 @@ begin
             AAnimation := TAnimation.Create(AnimationName, AAtlas.TextureName,
               FrameStart, FrameSize, AAtlas.Rects);
             AAssetManager.AddAnimation(AnimationName, AAnimation);
+          end;
+          'scene': begin
+            { Scene 생성 처리 }
+            if Fields[1] = 'scene_map' then
+              AScene := TSceneMap.Create(AAssetManager, ARenderer, AKeyInput)
+            else
+              AScene := TScene.Create(AAssetManager, ARenderer, AKeyInput);
+
+            AScene.SceneInit(Fields[3]);
+
+            { Scene 의 리소스 생성 (초기 엔터티등) }
+            FScenes.Add(Fields[2], AScene);
+          end;
+          'current_scene': begin
+            FCurrentSceneName := Fields[1];
           end;
         end;
       end;
@@ -212,17 +233,12 @@ begin
     end;
     }
 
-    { Scene 생성 처리 }
-    AScene := TSceneMap.Create(AAssetManager, ARenderer, AKeyInput);
-    AScene.SceneInit('resources/map_zelda.txt');
-
-    { Scene 의 리소스 생성 (초기 엔터티등) }
-    AScenes.Add(AScene);
   finally
     CloseFile(configFile);
   end;
 
 end;
+
 
 procedure TEngine.GameLoop;
 var
@@ -244,6 +260,8 @@ begin
   AKeyInput.InitKeys;
 
   new(sdlEvents);
+
+  FScenes.TryGetValue(FCurrentSceneName, AScene);
   while Running = True do
   begin
 
@@ -259,19 +277,14 @@ begin
             else
             begin
               AKeyInput.KeyDownEvent(sdlEvents^.key.keysym.sym);
-              for AScene in AScenes do
-              begin
-                AScene.DoAction(sdlEvents^.key.keysym.sym, action_start);
-              end;
+              AScene.DoAction(sdlEvents^.key.keysym.sym, action_start);
             end;
           end;
         end;
         SDL_KEYUP: begin
           AKeyInput.KeyDownEvent(sdlEvents^.key.keysym.sym);
-          for AScene in AScenes do
-          begin
-            AScene.DoAction(sdlEvents^.key.keysym.sym, action_stop);
-          end;
+          AScene.DoAction(sdlEvents^.key.keysym.sym, action_stop);
+
         end;
       end;
     end;
@@ -300,14 +313,11 @@ procedure TEngine.GameUpdate(dt: real);
 var
   AScene: TScene;
 begin
-  for AScene in AScenes do
-  begin
+  if FScenes.TryGetValue(FCurrentSceneName, AScene) then
     if AScene is TSceneMap then
       TSceneMap(AScene).SceneUpdate(dt)
     else
       Ascene.SceneUpdate(dt);
-
-  end;
 
 end;
 
@@ -315,14 +325,12 @@ procedure TEngine.GameRender();
 var
   AScene: TScene;
 begin
-  for AScene in AScenes do
-  begin
+  if FScenes.TryGetValue(FCurrentSceneName, AScene) then
     if AScene is TSceneMap then
       TSceneMap(AScene).SceneRender
     else
       AScene.SceneRender;
 
-  end;
 end;
 
 

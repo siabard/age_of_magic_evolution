@@ -9,3 +9,10 @@ animation sword items 1 2 300
 animation armor items 8 3 300
 bitmapfont hangul 16 16
 bitmapfont ascii 8 16
+
+# Scene 정보도 여기에서 등록해주는 것이 맞을까?
+# scene [scene type] [scene name] [resource path]
+scene scene_map zelda resources/map_zelda.txt
+
+# current_scene 현재 Scene 설정
+current_scene zelda
