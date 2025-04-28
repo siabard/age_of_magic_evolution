@@ -10,7 +10,7 @@ uses
 
 type
 
-  EActionName = (move_left, move_right, move_up, move_down, move_teleport);
+  EActionName = (move_left, move_right, move_up, move_down, move_action);
   EActionType = (action_start, action_stop);
   ESceneType = (void_scene, title_scene, map_scene, battle_scene, end_scene);
 
@@ -150,6 +150,10 @@ var
   LAtlas: TAtlas;
   AI: integer;
   firstgid: integer;
+
+  { 키 등록용 }
+  keycode: integer;
+  sdl_keycode: integer;
 
   { Story 등록용 }
   AStorySystem: TStorySystems;
@@ -419,6 +423,24 @@ begin
             AStorySystem := TStorySystems.Create;
             AStorySystem.ParseStoryFile(Fields[2]);
             FStorySystems.Add(Fields[1], AStorySystem);
+          end;
+          'key': begin
+            Val(Fields[1], keycode, valcode);
+            If valcode = 0 Then
+            begin
+              { keycode 를 SDLK_* 형식으로 맞추기 위해 값 변환
+                모든 키를 바꾸는 것은 아니고 일부 특수키만 변환한다.
+              }
+              sdl_keycode := keycode or (1 shl 30);
+              case Fields[2] of
+                'up': RegisterAction(sdl_keycode, move_up);
+                'down': RegisterAction(sdl_keycode, move_down);
+                'left': RegisterAction(sdl_keycode, move_left);
+                'right': RegisterAction(sdl_keycode, move_right);
+                'action': RegisterAction(keycode, move_action);
+              end;
+            end;
+
           end;
         end;
       end;

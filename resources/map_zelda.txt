@@ -43,3 +43,11 @@ set map scene_1
 
 # Story: story [story name] [story path]
 story sample resources/sample.story
+
+# Key Definition
+# key [keycode] [actionname]
+key 82 up
+key 81 down
+key 80 left
+key 79 right
+key 32 action

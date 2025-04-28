@@ -21,7 +21,7 @@ uses
   game_types,
   tilemap,
   entity_manager,
-  physics_util, story_engine;
+  physics_util, story_engine, scene_shooter;
 
 var
   AEngine: TEngine;

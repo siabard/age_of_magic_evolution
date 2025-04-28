@@ -7,7 +7,7 @@ interface
 
 uses
   Classes, SysUtils, Sdl2, asset_manager, entity, component, LogUtil,
-  textbox, Generics.Collections, scene, KeyInput, scene_map, atlas,
+  textbox, Generics.Collections, scene, KeyInput, atlas,
   animation, game_types, story_engine;
 
 type
@@ -38,7 +38,7 @@ type
 
 implementation
 
-uses StrUtils;
+uses StrUtils, scene_map, scene_shooter;
 
 constructor TEngine.Create;
 begin
@@ -316,6 +316,8 @@ begin
   if FScenes.TryGetValue(FCurrentSceneName, AScene) then
     if AScene is TSceneMap then
       TSceneMap(AScene).SceneUpdate(dt)
+    else if AScene is TSceneShooter then
+      TSceneShooter(AScene).SceneUpdate(dt)
     else
       Ascene.SceneUpdate(dt);
 
@@ -328,6 +330,8 @@ begin
   if FScenes.TryGetValue(FCurrentSceneName, AScene) then
     if AScene is TSceneMap then
       TSceneMap(AScene).SceneRender
+    else if AScene is TSceneShooter then
+      TSceneShooter(AScene).SceneRender
     else
       AScene.SceneRender;
 

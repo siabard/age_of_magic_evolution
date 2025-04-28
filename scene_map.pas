@@ -40,6 +40,7 @@ uses
   game_types,
   physics_util,
   tilemap,
+  LogUtil,
   Generics.Defaults,
   Generics.Collections;
 
@@ -161,11 +162,15 @@ begin
 
 
   { Action 설정 }
+  {* Scene 의 Init 으로 옮겨짐
+
   Self.RegisterAction(SDLK_UP, move_up);
   Self.RegisterAction(SDLK_DOWN, move_down);
   Self.RegisterAction(SDLK_LEFT, move_left);
   Self.RegisterAction(SDLK_RIGHT, move_right);
-  Self.RegisterAction(SDLK_SPACE, move_teleport);
+  Self.RegisterAction(SDLK_SPACE, move_action);
+
+  *}
 end;
 
 destructor TSceneMap.Destroy;
@@ -473,6 +478,7 @@ var
   CurrentMap: RTilemap;
 begin
   AEntities := FEntityManager.GetEntities;
+
   if FActionMap.TryGetValue(ACode, tmpAct) then
   begin
     if AAct = EActionType.action_start then
@@ -501,7 +507,7 @@ begin
             move_up: AEntity.input.up := False;
             move_left: AEntity.input.left := False;
             move_right: AEntity.input.right := False;
-            move_teleport: begin
+            move_action: begin
               // 30, 30 위치로 옮긴다.
               AEntity := EntityManager.GetEntity('player');
 
