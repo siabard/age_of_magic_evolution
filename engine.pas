@@ -132,6 +132,7 @@ begin
   Fields.Delimiter := #9; // 탭 문자
   Fields.StrictDelimiter := False; // 여러 구분자 허용
 
+  LogDebug(Format('TEngine.GameInit:: %s - request open', [ConfigPath]));
   AssignFile(configFile, ConfigPath);
 
   try
@@ -179,8 +180,8 @@ begin
             { Scene 생성 처리 }
             if Fields[1] = 'scene_map' then
               AScene := TSceneMap.Create(AAssetManager, ARenderer, AKeyInput)
-            Else If Fields[1] = 'scene_shooter' then
-                 AScene := TSceneShooter.Create(AAssetManager, ARenderer, AKeyInput)
+            else if Fields[1] = 'scene_shooter' then
+              AScene := TSceneShooter.Create(AAssetManager, ARenderer, AKeyInput)
             else
               AScene := TScene.Create(AAssetManager, ARenderer, AKeyInput);
 
@@ -316,10 +317,10 @@ var
   AScene: TScene;
 begin
   if FScenes.TryGetValue(FCurrentSceneName, AScene) then
-    if AScene is TSceneMap then
-      TSceneMap(AScene).SceneUpdate(dt)
-    else if AScene is TSceneShooter then
+    if AScene is TSceneShooter then
       TSceneShooter(AScene).SceneUpdate(dt)
+    else if AScene is TSceneMap then
+      TSceneMap(AScene).SceneUpdate(dt)
     else
       Ascene.SceneUpdate(dt);
 
@@ -330,10 +331,10 @@ var
   AScene: TScene;
 begin
   if FScenes.TryGetValue(FCurrentSceneName, AScene) then
-    if AScene is TSceneMap then
-      TSceneMap(AScene).SceneRender
-    else if AScene is TSceneShooter then
+    if AScene is TSceneShooter then
       TSceneShooter(AScene).SceneRender
+    else if AScene is TSceneMap then
+      TSceneMap(AScene).SceneRender
     else
       AScene.SceneRender;
 
