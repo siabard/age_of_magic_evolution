@@ -179,6 +179,8 @@ begin
             { Scene 생성 처리 }
             if Fields[1] = 'scene_map' then
               AScene := TSceneMap.Create(AAssetManager, ARenderer, AKeyInput)
+            Else If Fields[1] = 'scene_shooter' then
+                 AScene := TSceneShooter.Create(AAssetManager, ARenderer, AKeyInput)
             else
               AScene := TScene.Create(AAssetManager, ARenderer, AKeyInput);
 
