@@ -78,11 +78,15 @@ type
   private
     DX: integer;
     DY: integer;
+    FBoost: integer;
+    FBoostCooldown: integer;
   public
     constructor Create(cid: string);
     destructor Destroy; override;
     property X: integer read DX write DX;
     property Y: integer read DY write DY;
+    property Boost: integer read FBoost write FBoost;
+    property Cooldown: integer read FBoostCooldown write FBoostCooldown;
   end;
 
   TInputComponent = class(TComponent)
@@ -91,6 +95,7 @@ type
     FRight: boolean;
     FUp: boolean;
     FDown: boolean;
+    FBoost: boolean;
   public
     constructor Create(cid: string);
     destructor Destroy; override;
@@ -98,6 +103,7 @@ type
     property right: boolean read FRight write FRight;
     property up: boolean read FUp write FUp;
     property down: boolean read FDown write FDown;
+    property boost: boolean read FBoost write FBoost;
 
   end;
 

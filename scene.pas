@@ -10,7 +10,7 @@ uses
 
 type
 
-  EActionName = (move_left, move_right, move_up, move_down, move_action);
+  EActionName = (move_left, move_right, move_up, move_down, move_action, action_boost);
   EActionType = (action_start, action_stop);
   ESceneType = (void_scene, title_scene, map_scene, battle_scene, end_scene);
 
@@ -438,6 +438,7 @@ begin
                 'left': RegisterAction(sdl_keycode, move_left);
                 'right': RegisterAction(sdl_keycode, move_right);
                 'action': RegisterAction(keycode, move_action);
+                'boost': RegisterAction(sdl_keycode, action_boost);
               end;
             end;
 

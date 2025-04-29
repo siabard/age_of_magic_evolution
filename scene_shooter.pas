@@ -5,7 +5,8 @@ unit scene_shooter;
 interface
 
 uses
-  Classes, SysUtils, asset_manager, sdl2, KeyInput, scene_map, tilemap, atlas, physics_util;
+  Classes, SysUtils, asset_manager, sdl2, KeyInput, scene_map, tilemap,
+  atlas, physics_util;
 
 type
   { Scene Shooter }
@@ -19,15 +20,16 @@ type
     procedure SceneUpdate(dt: real);
     procedure SceneRender;
     procedure RenderSystem;
+    procedure BoostSystem(dt: real);
+    procedure BorderSystem;
   end;
 
 implementation
 
 uses entity, component, Generics.Collections, game_types, animation, camera;
-{ TSceneShooter }
+  { TSceneShooter }
 
-constructor TSceneShooter.Create(AM: TAssetManager; AR: PSDL_Renderer;
-  AK: TKeyInput);
+constructor TSceneShooter.Create(AM: TAssetManager; AR: PSDL_Renderer; AK: TKeyInput);
 begin
   inherited;
 
@@ -44,7 +46,7 @@ procedure TSceneShooter.SceneUpdate(dt: real);
 var
   FPS: integer;
 begin
-  inherited;
+  FEntityManager.Update;
 
   if dt = 0 then
     FPS := 0
@@ -52,6 +54,13 @@ begin
     FPS := 1000 div Trunc(dt * 1000);
   FTextBox.Text := Format('DT : %8d%sFPS: %8d', [Trunc(dt * 1000), sLineBreak, FPS]);
 
+  InputSystem;
+  MovementSystem(dt);
+  BoostSystem(dt);
+  CameraSystem(dt);
+  AnimationSystem(dt);
+  CollisionSystem;
+  BorderSystem;
 
 end;
 
@@ -91,7 +100,7 @@ var
   AAtlas: TAtlas;
   AI: integer; // 해당 타일셋에서 firstgid 를 뺀 진짜 값.
   ARect: RRect; // Atlas의 좌표
-  Angle: Double;
+  Angle: double;
   Center: TSDL_Point;
 begin
 
@@ -229,19 +238,19 @@ begin
             Format('DST : %d %d %d %d', [DstRect.x, DstRect.y, DstRect.w, DstRect.h]));
           }
 
-          If Assigned(AEntity.input) Then
+          if Assigned(AEntity.input) then
           begin
             Angle := 0;
-            Center.x:=32;
-            Center.y:=32;
-             If AEntity.input.left = true then
-                Angle := Angle - 10;
-             If AEntity.input.right = true then
-                Angle := Angle + 10;
+            Center.x := 32;
+            Center.y := 32;
+            if AEntity.input.left = True then
+              Angle := Angle - 10;
+            if AEntity.input.right = True then
+              Angle := Angle + 10;
 
-             SDL_RenderCopyEx(FRenderer, texture, @SrcRect, @DstRect, Angle, @Center, 0);
+            SDL_RenderCopyEx(FRenderer, texture, @SrcRect, @DstRect, Angle, @Center, 0);
           end
-          Else
+          else
           begin
             SDL_RenderCopy(FRenderer, texture, @SrcRect, @DstRect);
           end;
@@ -250,6 +259,99 @@ begin
       end;
     end;
   end;
+end;
+
+procedure TSceneShooter.BoostSystem(dt: real);
+var
+  AEntity: TEntity;
+begin
+  AEntity := FEntityManager.GetEntity('player');
+  { Plyaer 의 Boost 수치를 내린다. }
+  if Assigned(AEntity.movement) then
+  begin
+
+    if AEntity.movement.boost > 0 then
+    begin
+      { boost 가 남아 있는 동안은 추가적인 이동효과를 얻는다. }
+      AEntity.movement.boost := AEntity.movement.boost - Trunc(dt * 1000);
+
+      { boost 가 다 떨어지면 cooldown 을 설정한다. }
+      if AEntity.movement.boost <= 0 then
+        AEntity.movement.Cooldown := 6000;
+
+      if Assigned(AEntity.position) then
+      begin
+        AEntity.position.X := AEntity.position.X + Round(AEntity.movement.X * dt);
+        AEntity.position.Y := AEntity.position.Y + Round(AEntity.movement.Y * dt);
+      end;
+
+    end
+    else
+    begin
+      { boost 가 꺼져있는 동안은 cooldown 을 줄인다. }
+      AEntity.movement.Cooldown := AEntity.movement.Cooldown - Trunc(dt * 1000);
+      if AEntity.movement.Cooldown <= 0 then
+        AEntity.movement.Cooldown := 0;
+    end;
+  end;
+end;
+
+procedure TSceneShooter.BorderSystem;
+var
+  Player: TEntity;
+  APosComp: TPositionComponent;
+  Top, Left, Right, Bottom: integer;
+
+  AAnimComp: TAnimationComponent;
+  AAnimation: TAnimation;
+  AnimRect: RRect;
+
+  PlayerTop, PlayerLeft, PlayerBottom, PlayerRight: integer;
+begin
+
+  Top := 0;
+  Bottom := 480;
+  Left := 0;
+  Right := 640;
+
+  Player := EntityManager.GetEntity('player');
+
+  if Assigned(Player.animation) and Assigned(Player.position) then
+  begin
+    { 플레이어 사각 크기 }
+    AAnimComp := Player.animation;
+    APosComp := Player.position;
+    AAnimComp.Animations.TryGetValue(AAnimComp.CurrentAnimation, AAnimation);
+
+    if AAnimation <> nil then
+    begin
+      // 현재 프레임에 걸린 값을 찾는다.
+      AnimRect := AAnimation.GetFrames[AAnimComp.CurrentFrame];
+
+      PlayerTop := Player.position.Y;
+      PlayerBottom := Player.position.Y + AnimRect.RH;
+      PlayerLeft := Player.position.X;
+      PlayerRight := Player.position.X + AnimRect.RW;
+
+      // Left Bound
+      if PlayerLeft < Left then
+        Player.position.X := Player.position.X + (Left - PlayerLeft);
+
+      // Right Bound
+      if PlayerRight > Right then
+        Player.position.X := Player.position.X - (PlayerRight - Right);
+
+      // Top Bound
+      if PlayerTop < Top then
+        Player.position.Y := Player.position.Y + (Top - PlayerTop);
+
+      // Bottom Bound
+      if PlayerBottom > Bottom then
+        Player.position.Y := Player.position.Y - (PlayerBottom - Bottom);
+
+    end;
+  end;
+
 end;
 
 end.

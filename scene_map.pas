@@ -492,6 +492,16 @@ begin
             move_up: AEntity.input.up := True;
             move_left: AEntity.input.left := True;
             move_right: AEntity.input.right := True;
+            action_boost: begin
+              if Assigned(AEntity.movement) then
+              begin
+                if (AEntity.movement.Boost <= 0) and
+                  (AEntity.movement.Cooldown <= 0) then
+                begin
+                  AEntity.movement.Boost := 1500;
+                end;
+              end;
+            end;
           end;
 
       end;
