@@ -160,6 +160,7 @@ end;
 
 procedure TTextBox.Draw(renderer: PSDL_Renderer);
 begin
+  DrawPanel(renderer);
   DrawString(renderer, FText);
 end;
 
