@@ -5,12 +5,12 @@ unit component;
 interface
 
 uses
-  Classes, SysUtils, Generics.Collections, animation, game_types;
+  Classes, SysUtils, Generics.Collections, animation, game_types, inventory;
 
 type
 
   EComponent = (void_component, animation_component, position_component,
-    movement_component);
+    movement_component, inventory_component, teleport_component, transition_component);
 
   TComponent = class
   private
@@ -127,6 +127,47 @@ type
     property Pos: RVec2 read FPos write FPos;
   end;
 
+  { TInventoryComponent }
+  TInventoryComponent = class(TComponent)
+    private
+      FInventory: TInventory;
+    public
+      constructor Create(cid: string);
+  end;
+
+  { TTransitionComponent }
+
+  ETransition = (size_transition, position_transition);
+
+  TTransitionComponent = class(TComponent)
+    private
+      FTransitionType: ETransition;
+
+      FStartV: Integer;
+      FEndV: Integer;
+
+      FCurrent: Integer;
+
+      { progress 0~ 1까지 }
+      FProgress: Real;
+
+      { Active }
+      FIsActive: Boolean;
+
+      { Duration }
+      FDuration: Integer;
+    public
+      constructor Create(cid: string);
+      destructor Destroy; override;
+      property TransitionType: ETransition read FTransitionType write FTransitionType;
+      property StartV: Integer read FStartV write FStartV;
+      property EndV: Integer read FEndV write FEndV;
+      property Current: Integer read FCurrent write FCurrent;
+      property Progress: Real read FProgress write FProgress;
+      property IsActive: Boolean read FIsActive write FIsActive;
+      property Duration: Integer read FDuration write FDuration;
+  end;
+
 implementation
 
 uses
@@ -146,7 +187,7 @@ end;
 
 constructor TPositionComponent.Create(cid: string);
 begin
-  inherited;
+  inherited Create(cid);
   FType := position_component;
   FX := 0;
   FY := 0;
@@ -257,6 +298,27 @@ begin
 end;
 
 destructor TTeleportComponent.Destroy;
+begin
+  inherited Destroy;
+end;
+
+{ TInventoryComponent }
+
+constructor TInventoryComponent.Create(cid: string);
+begin
+  inherited Create(cid);
+  Self.FType:= inventory_component;
+end;
+
+{ TTransitionComponent }
+
+constructor TTransitionComponent.Create(cid: string);
+begin
+  inherited Create(cid);
+  Self.FType:= transition_component;
+end;
+
+destructor TTransitionComponent.Destroy;
 begin
   inherited Destroy;
 end;

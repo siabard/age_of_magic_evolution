@@ -25,6 +25,7 @@ type
     FTag: string;
     FGroup: TStringList;
     FTeleport: TTeleportComponent;
+    FTransition: TTransitionComponent;
 
   public
     constructor Create;
@@ -41,6 +42,7 @@ type
     property zindex: integer read FZIndex write FZIndex;
     property group: TStringList read FGroup write FGroup;
     property teleporter: TTeleportComponent read FTeleport write FTeleport;
+    property transition: TTransitionComponent read FTransition write FTransition;
     function GetBoundigRect: RRect;
     function GetPrevBoundingRect: RRect;
     function setNid(AId: integer): integer;

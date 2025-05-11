@@ -456,6 +456,8 @@ begin
   finally
     CloseFile(configFile);
   end;
+
+  Fields.Free;
 end;
 
 

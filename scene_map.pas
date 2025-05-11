@@ -28,6 +28,7 @@ type
     procedure InputSystem;
     procedure MovementSystem(dt: real);
     procedure CollisionSystem;
+    procedure TransitionSystem(dt: real);
   end;
 
 implementation
@@ -37,6 +38,7 @@ uses
   component,
   animation,
   camera,
+  Math,
   game_types,
   physics_util,
   tilemap,
@@ -662,6 +664,46 @@ begin
 
         end;
       end;
+
+  end;
+end;
+
+procedure TSceneMap.TransitionSystem(dt: real);
+var
+  ACompPos: TPositionComponent;
+  ACompTran: TTransitionComponent;
+  AEntity: TEntity;
+  I: integer;
+  Entities: specialize TList<TEntity>;
+begin
+  Entities := FEntityManager.GetEntities;
+
+  for I := 0 to Entities.Count - 1 do
+  begin
+    AEntity := Entities[I];
+
+    if Assigned(AEntity.transition) then
+    begin
+      { Transition 의 변화 처리 }
+      { Transition 의 duration }
+      ACompTran := AEntity.transition;
+      if ACompTran.IsActive then
+      begin
+        ACompTran.Progress := dt / ACompTran.Duration;
+        ACompTran.Current := Floor((ACompTran.EndV - ACompTran.StartV) * ACompTran.Progress);
+
+        case ACompTran.TransitionType of
+          position_transition:
+          begin
+            if Assigned(AEntity.position) then
+            begin
+              ACompPos := AEntity.position;
+              ACompPos.Y := ACompPos.Y + ACompTran.Current;
+            end;
+          end;
+        end;
+      end;
+    end;
 
   end;
 end;

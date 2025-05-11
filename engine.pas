@@ -240,6 +240,7 @@ begin
     CloseFile(configFile);
   end;
 
+  Fields.Free;
 end;
 
 
